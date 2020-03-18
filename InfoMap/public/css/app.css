@@ -16833,6 +16833,10 @@ body .removeButton {
   display: none;
 }
 
+body i {
+  cursor: pointer;
+}
+
 .wrapper {
   height: 600px;
 }
@@ -17006,6 +17010,18 @@ body .removeButton {
 .wrapper .sidebar-thumbnails .thumbnails li img {
   width: 22%;
   padding: 5px;
+}
+
+.wrapper .sidebar-thumbnails .thumbnails li i {
+  position: relative;
+  top: -15px;
+  left: -25px;
+  color: #4a4040;
+  transition: 0.3s;
+}
+
+.wrapper .sidebar-thumbnails .thumbnails li i:hover {
+  color: #cab0b0;
 }
 
 .wrapper .sidebar-comment {

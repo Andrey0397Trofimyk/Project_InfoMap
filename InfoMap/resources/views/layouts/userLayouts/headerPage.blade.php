@@ -53,7 +53,7 @@
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-menu dropdown-menu-right text-center" style='padding: 0' aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item exit-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

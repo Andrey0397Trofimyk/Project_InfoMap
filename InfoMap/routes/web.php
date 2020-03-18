@@ -41,6 +41,7 @@ Route::group($goup,function(){
     ->names('user')
     ->middleware('userCheck');
     Route::post('/user/upload','UserController@uploads')->name('user.upload');
+    Route::post('/user/com','UserController@com');
 });
 
 
@@ -55,7 +56,7 @@ Route::get('/images/{location_id}',function($location_id){
     return Image::where('location_id',$location_id)->select('image_url')->get();
 });
 Route::get('/comments/{location_id}',function($location_id){
-    return Comment::where('location_id',$location_id)->get();
+    return Comment::where('location_id',$location_id)->orderBy('updated_at','desc')->get();
 });
 Route::get('/user/{user_id}',function($user_id){
     return Comment::where('user_id',$user_id)->user;

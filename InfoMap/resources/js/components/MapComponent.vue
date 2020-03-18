@@ -75,6 +75,9 @@
 					lat: e.lat ,
 					lng: e.lng 
 				}
+				// console.log(e);
+				// console.log(i);
+				// console.log(m_p);
 				this.infoLocation.forEach(element => {
 					if(this.newLocation.length == 0) {
 						if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
@@ -101,10 +104,9 @@
 			},
 			// drop marker
 			deleteMarker: function() {
-
+				alert();
 				for (let index = 0; index < this.markers.length; index++) {
 					if(JSON.stringify(this.markers[index].position) == this.deleteMarker) {
-						alert();
 						 this.markers.splice(index, 1);
 					}
 				}

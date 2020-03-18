@@ -8,7 +8,12 @@
                 </div>
             </div>
             <!-- onsubmit="return false;" -->
-           <form method='POST' action='/user' id='createForm' enctype="multipart/form-data" onsubmit="return false;">
+           <form method='POST' :action="'/user/' + data.id" id='createForm' enctype="multipart/form-data">
+                
+                <!-- PUT -->
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name='masImg' :value='removeImages'>
+                <!-- /PUT -->
                 <input type="hidden" id='tit_loc' name='_token' :value='csrf' >
                 
                 <div class="sidebar-thumbnails col-12" style='height:auto'>
@@ -16,8 +21,9 @@
                         <li
                         v-for='(image, id) in previewImages'
                         :key='id'
-                        @click='seeImage(image)'
+                        @click='seeImageForm(image)'
                         ><img :src="image" alt="" class='img-fluid'>
+                        <i class="fas fa-times deleteImg" @click='removePreviewImage(image)'></i>
                        </li>
                     </ul>
                 </div>
@@ -29,14 +35,15 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Заголовок</label>
-                    <input type="text" v-model='title' name='title' class="form-control" placeholder="Введіть.....">
+                    <input type="text" id='title' v-model='title' name='title' class="form-control" placeholder="Введіть.....">
                 </div>
                     <div class="form-group">
                     <label for="exampleFormControlTextarea1">Опис</label>
-                    <textarea v-model='textarea' class="form-control" name='text' rows="3"></textarea>
+                    <textarea v-model='textarea' id='textarea' class="form-control" name='text' rows="3"></textarea>
                 </div>
                 <input type="hidden" name='marker' :value='JSON.stringify(this.marker)'>
-                <button type="submit" @click='createQuery()' class="btn btn-primary">Створити</button>
+                <button type="submit" class="btn btn-primary">Створити</button>
+                <!-- @click='createQuery()' -->
             </form>
         </div>
         <div class="informationLocation" v-else>
@@ -70,7 +77,9 @@
                     </h4>
                 </div>
                 <div class="form-comment" v-if='userId'>
-                    <form method='POST' action='/user' onsubmit="return false;">
+                    <!-- onsubmit="return false;" -->
+                    <form onsubmit="return false;">
+               
                         <div class="form-group">
                             <textarea v-model='review' name='review' class="form-control" id="comment-text" rows="3"></textarea>
                         </div>
@@ -126,12 +135,14 @@
                 textarea:null,
                 newImages:[],
                 previewImages:[],
+                removeImages:[],
                 imageScr:'',
                 csrf:$('meta[name="csrf-token"]').attr('content'),
                 contentUser:'false',
                 actionForm:false,
                 review:null,
-                inputFiles:null
+                inputFiles:null,
+                markerPosition:null
             }
         },
         async beforeRouteEnter(to,from,next){
@@ -143,16 +154,20 @@
         methods: {
             seeImage: function(e) {
                 $('.sidebar-image').css('background-image','url("storage/'+e['image_url']+'")');
-                // $('thumbnails img[src="'+'/storage/'+e['image_url']+'"').css('border','1px solid black');
-                console.log($(e.target));
+                
+            },
+            seeImageForm: function(e) {
+                $('.sidebar-image').css('background-image','url("'+e+'")');
             },
            async createQuery() {
+               $('.sidebar-image').css('background-image','url("")');
 
                 let vue = this;
-                // let files = Array.from($('#file').files);        
-                for( let item of this.inputFiles) {
-                    await this.uploadsFile(item);
-                }
+                if(this.inputFiles == null) {
+                    for( let item of this.inputFiles) {
+                        await this.uploadsFile(item);
+                    }
+                }    
                 axios
                 .post('/user',{
                     title:this.title,
@@ -164,10 +179,11 @@
                     $('.sidebar').removeClass('active');
                     vue.$emit('location',data.data);
                 });
-
+                
                 $('.sidebar').removeClass('active');
             },
             async previewFiles(e) {
+                // console.log(event.target.files);
                 this.inputFiles = Array.from(event.target.files);
 
                 var file = e.target.files; 
@@ -198,14 +214,13 @@
             },
             insertData: function(e) {
                 alert();
-                // $('input[name="title"]').val(this.data.title);
-                // $('textarea[name="text"]').text(this.data.text);
-                // $('input[name="marker"]').val(this.data.marker);
-                $('input[name="title"]').val('замок Любарта');
-                $('textarea[name="text"]').text('вімвімвімві');
-                // $('input[name="marker"]').val(this.data.marker);
-                // this.previewImages = this.imagesUrl;
-                // this.previewImages
+
+                this.title = this.data.title;
+                this.textarea = this.data.text;
+                this.imagesUrl.forEach(el => {
+                    this.previewImages.push('/storage/'+ el.image_url);
+                })
+                this.seeImageForm(this.previewImages[0]);
                 this.actionForm = true;
             },
             removeData: function(e) {
@@ -216,23 +231,68 @@
                 document.querySelectorAll('input, textarea').forEach(el=>el.value = '');
                 this.actionForm = false;
                 this.$emit('actform');
-
+                this.title = null;
+                this.textarea = null;
+                this.previewImages = [];
             },
             createComment: function(e) {
-                // axios
-                // .post('/user',{
-                //     location_id:this.data.id,
-                //     review:this.review
-                // })
-                // .then(function(data) {
-                //     alert('success');
-                // });
+                axios
+                .post('/user',{
+                    location_id:this.data.id,
+                    review:this.review
+                })
+                .then(function(data) {
+                    $('.user-comment').before(
+                        $('<div/>').attr('class','row user-comment').append(
+                            $('<div/>').attr('class','col-12').append(
+                                $('<div/>').attr('class','card card-white post').append(
+                                    $('<div/>').addClass('post-heading').append(
+                                        $('<div/>').attr('class','float-left user-image').append(
+                                            $('<img/>').attr({
+                                                src:'http://bootdey.com/img/Content/user_1.jpg',
+                                                class:'img-circle avatar',
+                                                width:'50'
+                                            })
+                                        ),
+                                        $('<div/>').attr('class','float-left user-info row').append(
+                                            $('<div/>').attr('class','title col-12').append(
+                                                $('<h6/>').text(data.data.surname)
+                                            ),
+                                            $('<div/>').attr('class','time col-12').append(
+                                                $('<p/>').attr('class','text-muted float-left small')
+                                                .text(data.data.updated_at.substr(0,10)),
+                                                $('<p/>').attr('class','text-muted float-left small ml-2')
+                                                .text(data.data.updated_at.substr(11,5))
+                                            )
+                                        )
+                                    ),
+                                    $('<div/>').attr('class','post-description text-justify').append(
+                                        $('<p/>').text(data.data.review)
+                                    )
+                                )
+                            )
+                        )
+                    );
+                });
+            },
+            removePreviewImage:function(e) {
+                for (let index = 0; index < this.previewImages.length; index++) {
+                    // console.log(this.previewImages[index].substr(0,8));
+                    // if(this.previewImages[index].substr(0,7) != '/storage') {
+                        // console.log(this.inputFiles);
+                    // }else 
+                    console.log(this.previewImages[index] + ' == '+  e);
+                    if(this.previewImages[index] == e) {
+                        this.previewImages.splice(index,1);
+                        this.removeImages.push(e);
+                    }
+                }
             }
         },
         watch: {
             data:function() {
                 $('.sidebar').addClass('active');
-                console.log(this.data.user_id +' == '+ this.userId);
+                // console.log(this.data.user_id +' == '+ this.userId);
                 if(this.data.user_id == this.userId) {
                     this.contentUser = true;
                 }else {
@@ -246,6 +306,7 @@
                  $('.sidebar-image').css('background-image','url("'+this.previewImages[0]+'")');
             },
             activForm:function() {
+                this.markerPosition = this.marker;
                 this.actionForm = this.activForm;
             }
         }

@@ -12,7 +12,7 @@ class Comment extends Model
      * @var array
      */
     protected $fillable = [
-        'title','text'
+        'user_id','location_id','surname','review'
       ];
 
     /**

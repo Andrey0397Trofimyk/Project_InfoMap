@@ -2002,7 +2002,10 @@ __webpack_require__.r(__webpack_exports__);
       this.center = {
         lat: e.lat,
         lng: e.lng
-      };
+      }; // console.log(e);
+      // console.log(i);
+      // console.log(m_p);
+
       this.infoLocation.forEach(function (element) {
         if (_this.newLocation.length == 0) {
           if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
@@ -2033,9 +2036,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     // drop marker
     deleteMarker: function deleteMarker() {
+      alert();
+
       for (var index = 0; index < this.markers.length; index++) {
         if (JSON.stringify(this.markers[index].position) == this.deleteMarker) {
-          alert();
           this.markers.splice(index, 1);
         }
       }
@@ -2187,6 +2191,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['data', 'marker', 'imagesUrl', 'comments', 'userId', 'activForm'],
   data: function data() {
@@ -2197,12 +2210,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       textarea: null,
       newImages: [],
       previewImages: [],
+      removeImages: [],
       imageScr: '',
       csrf: $('meta[name="csrf-token"]').attr('content'),
       contentUser: 'false',
       actionForm: false,
       review: null,
-      inputFiles: null
+      inputFiles: null,
+      markerPosition: null
     };
   },
   beforeRouteEnter: function beforeRouteEnter(to, from, next) {
@@ -2231,9 +2246,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   methods: {
     seeImage: function seeImage(e) {
-      $('.sidebar-image').css('background-image', 'url("storage/' + e['image_url'] + '")'); // $('thumbnails img[src="'+'/storage/'+e['image_url']+'"').css('border','1px solid black');
-
-      console.log($(e.target));
+      $('.sidebar-image').css('background-image', 'url("storage/' + e['image_url'] + '")');
+    },
+    seeImageForm: function seeImageForm(e) {
+      $('.sidebar-image').css('background-image', 'url("' + e + '")');
     },
     createQuery: function createQuery() {
       var _this = this;
@@ -2245,64 +2261,70 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                vue = _this; // let files = Array.from($('#file').files);        
+                $('.sidebar-image').css('background-image', 'url("")');
+                vue = _this;
+
+                if (!(_this.inputFiles == null)) {
+                  _context2.next = 29;
+                  break;
+                }
 
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
                 _iteratorError = undefined;
-                _context2.prev = 4;
+                _context2.prev = 6;
                 _iterator = _this.inputFiles[Symbol.iterator]();
 
-              case 6:
+              case 8:
                 if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context2.next = 13;
+                  _context2.next = 15;
                   break;
                 }
 
                 item = _step.value;
-                _context2.next = 10;
+                _context2.next = 12;
                 return _this.uploadsFile(item);
 
-              case 10:
+              case 12:
                 _iteratorNormalCompletion = true;
-                _context2.next = 6;
-                break;
-
-              case 13:
-                _context2.next = 19;
+                _context2.next = 8;
                 break;
 
               case 15:
-                _context2.prev = 15;
-                _context2.t0 = _context2["catch"](4);
+                _context2.next = 21;
+                break;
+
+              case 17:
+                _context2.prev = 17;
+                _context2.t0 = _context2["catch"](6);
                 _didIteratorError = true;
                 _iteratorError = _context2.t0;
 
-              case 19:
-                _context2.prev = 19;
-                _context2.prev = 20;
+              case 21:
+                _context2.prev = 21;
+                _context2.prev = 22;
 
                 if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                   _iterator["return"]();
                 }
 
-              case 22:
-                _context2.prev = 22;
+              case 24:
+                _context2.prev = 24;
 
                 if (!_didIteratorError) {
-                  _context2.next = 25;
+                  _context2.next = 27;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 25:
-                return _context2.finish(22);
-
-              case 26:
-                return _context2.finish(19);
-
               case 27:
+                return _context2.finish(24);
+
+              case 28:
+                return _context2.finish(21);
+
+              case 29:
                 axios.post('/user', {
                   title: _this.title,
                   text: _this.textarea,
@@ -2314,12 +2336,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
                 $('.sidebar').removeClass('active');
 
-              case 29:
+              case 31:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[4, 15, 19, 27], [20,, 22, 26]]);
+        }, _callee2, null, [[6, 17, 21, 29], [22,, 24, 28]]);
       }))();
     },
     previewFiles: function previewFiles(e) {
@@ -2331,6 +2353,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
+                // console.log(event.target.files);
                 _this2.inputFiles = Array.from(event.target.files);
                 file = e.target.files;
 
@@ -2387,15 +2410,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     insertData: function insertData(e) {
-      alert(); // $('input[name="title"]').val(this.data.title);
-      // $('textarea[name="text"]').text(this.data.text);
-      // $('input[name="marker"]').val(this.data.marker);
+      var _this4 = this;
 
-      $('input[name="title"]').val('замок Любарта');
-      $('textarea[name="text"]').text('вімвімвімві'); // $('input[name="marker"]').val(this.data.marker);
-      // this.previewImages = this.imagesUrl;
-      // this.previewImages
-
+      alert();
+      this.title = this.data.title;
+      this.textarea = this.data.text;
+      this.imagesUrl.forEach(function (el) {
+        _this4.previewImages.push('/storage/' + el.image_url);
+      });
+      this.seeImageForm(this.previewImages[0]);
       this.actionForm = true;
     },
     removeData: function removeData(e) {
@@ -2408,21 +2431,40 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
       this.actionForm = false;
       this.$emit('actform');
+      this.title = null;
+      this.textarea = null;
+      this.previewImages = [];
     },
-    createComment: function createComment(e) {// axios
-      // .post('/user',{
-      //     location_id:this.data.id,
-      //     review:this.review
-      // })
-      // .then(function(data) {
-      //     alert('success');
-      // });
+    createComment: function createComment(e) {
+      axios.post('/user', {
+        location_id: this.data.id,
+        review: this.review
+      }).then(function (data) {
+        $('.user-comment').before($('<div/>').attr('class', 'row user-comment').append($('<div/>').attr('class', 'col-12').append($('<div/>').attr('class', 'card card-white post').append($('<div/>').addClass('post-heading').append($('<div/>').attr('class', 'float-left user-image').append($('<img/>').attr({
+          src: 'http://bootdey.com/img/Content/user_1.jpg',
+          "class": 'img-circle avatar',
+          width: '50'
+        })), $('<div/>').attr('class', 'float-left user-info row').append($('<div/>').attr('class', 'title col-12').append($('<h6/>').text(data.data.surname)), $('<div/>').attr('class', 'time col-12').append($('<p/>').attr('class', 'text-muted float-left small').text(data.data.updated_at.substr(0, 10)), $('<p/>').attr('class', 'text-muted float-left small ml-2').text(data.data.updated_at.substr(11, 5))))), $('<div/>').attr('class', 'post-description text-justify').append($('<p/>').text(data.data.review))))));
+      });
+    },
+    removePreviewImage: function removePreviewImage(e) {
+      for (var index = 0; index < this.previewImages.length; index++) {
+        // console.log(this.previewImages[index].substr(0,8));
+        // if(this.previewImages[index].substr(0,7) != '/storage') {
+        // console.log(this.inputFiles);
+        // }else 
+        console.log(this.previewImages[index] + ' == ' + e);
+
+        if (this.previewImages[index] == e) {
+          this.previewImages.splice(index, 1);
+          this.removeImages.push(e);
+        }
+      }
     }
   },
   watch: {
     data: function data() {
-      $('.sidebar').addClass('active');
-      console.log(this.data.user_id + ' == ' + this.userId);
+      $('.sidebar').addClass('active'); // console.log(this.data.user_id +' == '+ this.userId);
 
       if (this.data.user_id == this.userId) {
         this.contentUser = true;
@@ -2438,6 +2480,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $('.sidebar-image').css('background-image', 'url("' + this.previewImages[0] + '")');
     },
     activForm: function activForm() {
+      this.markerPosition = this.marker;
       this.actionForm = this.activForm;
     }
   }
@@ -39593,13 +39636,21 @@ var render = function() {
             {
               attrs: {
                 method: "POST",
-                action: "/user",
+                action: "/user/" + _vm.data.id,
                 id: "createForm",
-                enctype: "multipart/form-data",
-                onsubmit: "return false;"
+                enctype: "multipart/form-data"
               }
             },
             [
+              _c("input", {
+                attrs: { type: "hidden", name: "_method", value: "PUT" }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                attrs: { type: "hidden", name: "masImg" },
+                domProps: { value: _vm.removeImages }
+              }),
+              _vm._v(" "),
               _c("input", {
                 attrs: { type: "hidden", id: "tit_loc", name: "_token" },
                 domProps: { value: _vm.csrf }
@@ -39623,7 +39674,7 @@ var render = function() {
                               key: id,
                               on: {
                                 click: function($event) {
-                                  return _vm.seeImage(image)
+                                  return _vm.seeImageForm(image)
                                 }
                               }
                             },
@@ -39631,6 +39682,15 @@ var render = function() {
                               _c("img", {
                                 staticClass: "img-fluid",
                                 attrs: { src: image, alt: "" }
+                              }),
+                              _vm._v(" "),
+                              _c("i", {
+                                staticClass: "fas fa-times deleteImg",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.removePreviewImage(image)
+                                  }
+                                }
                               })
                             ]
                           )
@@ -39675,6 +39735,7 @@ var render = function() {
                   staticClass: "form-control",
                   attrs: {
                     type: "text",
+                    id: "title",
                     name: "title",
                     placeholder: "Введіть....."
                   },
@@ -39705,7 +39766,7 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
-                  attrs: { name: "text", rows: "3" },
+                  attrs: { id: "textarea", name: "text", rows: "3" },
                   domProps: { value: _vm.textarea },
                   on: {
                     input: function($event) {
@@ -39725,15 +39786,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "button",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { type: "submit" },
-                  on: {
-                    click: function($event) {
-                      return _vm.createQuery()
-                    }
-                  }
-                },
+                { staticClass: "btn btn-primary", attrs: { type: "submit" } },
                 [_vm._v("Створити")]
               )
             ]
@@ -39817,56 +39870,46 @@ var render = function() {
             _vm._v(" "),
             _vm.userId
               ? _c("div", { staticClass: "form-comment" }, [
-                  _c(
-                    "form",
-                    {
-                      attrs: {
-                        method: "POST",
-                        action: "/user",
-                        onsubmit: "return false;"
-                      }
-                    },
-                    [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("textarea", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.review,
-                              expression: "review"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: {
-                            name: "review",
-                            id: "comment-text",
-                            rows: "3"
-                          },
-                          domProps: { value: _vm.review },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.review = $event.target.value
-                            }
+                  _c("form", { attrs: { onsubmit: "return false;" } }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.review,
+                            expression: "review"
                           }
-                        })
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "btn btn-outline-secondary btn-sm float-right",
-                          attrs: { type: "submit" },
-                          on: { click: _vm.createComment }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          name: "review",
+                          id: "comment-text",
+                          rows: "3"
                         },
-                        [_vm._v("Коментувати")]
-                      )
-                    ]
-                  )
+                        domProps: { value: _vm.review },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.review = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          "btn btn-outline-secondary btn-sm float-right",
+                        attrs: { type: "submit" },
+                        on: { click: _vm.createComment }
+                      },
+                      [_vm._v("Коментувати")]
+                    )
+                  ])
                 ])
               : _vm._e(),
             _vm._v(" "),

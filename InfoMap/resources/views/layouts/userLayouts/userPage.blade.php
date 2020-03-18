@@ -3,7 +3,6 @@
 @section('content')
     <!-- Map -->
     <div class="content col-12">
-        
         <gmap-component
         :info-location='{{$locations->get()}}'
         :new-location='locationNew'
