@@ -1968,17 +1968,15 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    // freate marker
     createMarker: function createMarker(e) {
-      // this.$emit('closeWindow');
       $('.sidebar').removeClass('active');
       this.accessCreate = true;
     },
+    // function map click
     onMapClick: function onMapClick(e) {
-      // console.log(new google.maps.LatLng( e.latLng ));
-      // console.log(number(e.latLng));
-      console.log(e.latLng.lat());
-      console.log(e.latLng.lng());
-
+      // console.log(e.latLng.lat());
+      // console.log(e.latLng.lng());
       if (this.accessCreate && !this.actionForm) {
         this.markers.push({
           position: e.latLng
@@ -1996,43 +1994,44 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     },
+    // function marker click
     onMarkerClick: function onMarkerClick(e, i, m_p) {
       var _this = this;
 
-      console.log(m_p.latLng.lat());
-      console.log(m_p.latLng.lng());
       this.accessCreate = false;
       this.center = {
         lat: e.lat,
         lng: e.lng
       };
       this.infoLocation.forEach(function (element) {
-        if (element['marker'] == '{"lat":' + e.lat + ',"lng":' + e.lng + '}') {
-          _this.markerId = element['id'];
+        if (_this.newLocation.length == 0) {
+          if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
+            _this.markerId = element['id'];
 
-          _this.$emit('position', element['id']);
-        } // for (let index = 0; index < this.newLocation.length; index++) {
-        // 	// const element = array[index];
-        // 	console.log(element['marker'] + ' ||| ' +this.newLocation[index]['marker']);
-        // 	if(element['marker'] == '{"lat":'+e.lat+',"lng":'+e.lng+'}' || element['marker'] == this.newLocation[index]['marker']) {
-        // 	console.log('+');
-        // 	alert('openLocation');
-        // 	this.markerId = element['id'];
-        // 	// this.$emit('position',element['id']);
-        // 	}	
-        // }
+            _this.$emit('position', element['id']);
+          }
+        } else {
+          for (var index = 0; index < _this.newLocation.length; index++) {
+            if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
+              _this.markerId = element['id'];
 
+              _this.$emit('position', element['id']);
+            }
+          }
+        }
       });
     }
   },
   watch: {
+    // add new location to list
     newLocation: function newLocation() {
       var _this2 = this;
 
       this.newLocation.forEach(function (element) {
         _this2.infoLocation.push(element);
-      }); // this.infoLocation.push(this.newLocation);
+      });
     },
+    // drop marker
     deleteMarker: function deleteMarker() {
       for (var index = 0; index < this.markers.length; index++) {
         if (JSON.stringify(this.markers[index].position) == this.deleteMarker) {
@@ -2047,6 +2046,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
   },
+  // add marker to map
   mounted: function mounted() {
     var _this3 = this;
 
@@ -2186,6 +2186,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['data', 'marker', 'imagesUrl', 'comments', 'userId', 'activForm'],
   data: function data() {
@@ -2200,7 +2201,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       csrf: $('meta[name="csrf-token"]').attr('content'),
       contentUser: 'false',
       actionForm: false,
-      review: null
+      review: null,
+      inputFiles: null
     };
   },
   beforeRouteEnter: function beforeRouteEnter(to, from, next) {
@@ -2234,45 +2236,155 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       console.log($(e.target));
     },
     createQuery: function createQuery() {
-      // let vue = this;
-      // axios
-      // .post('/user',{
-      //     title:this.title,
-      //     text:this.textarea,
-      //     marker:JSON.stringify(this.marker),
-      //     image_url:this.newImages
-      //     image_url:new FormData($('#file')[0])
-      // })
-      // .then(function(data) {
-      //     $('.sidebar').removeClass('active');
-      //     console.log(data.data);
-      //     vue.$emit('location',data.data);
-      // });
-      $('.sidebar').removeClass('active');
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var vue, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, item;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                vue = _this; // let files = Array.from($('#file').files);        
+
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
+                _context2.prev = 4;
+                _iterator = _this.inputFiles[Symbol.iterator]();
+
+              case 6:
+                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                  _context2.next = 13;
+                  break;
+                }
+
+                item = _step.value;
+                _context2.next = 10;
+                return _this.uploadsFile(item);
+
+              case 10:
+                _iteratorNormalCompletion = true;
+                _context2.next = 6;
+                break;
+
+              case 13:
+                _context2.next = 19;
+                break;
+
+              case 15:
+                _context2.prev = 15;
+                _context2.t0 = _context2["catch"](4);
+                _didIteratorError = true;
+                _iteratorError = _context2.t0;
+
+              case 19:
+                _context2.prev = 19;
+                _context2.prev = 20;
+
+                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                  _iterator["return"]();
+                }
+
+              case 22:
+                _context2.prev = 22;
+
+                if (!_didIteratorError) {
+                  _context2.next = 25;
+                  break;
+                }
+
+                throw _iteratorError;
+
+              case 25:
+                return _context2.finish(22);
+
+              case 26:
+                return _context2.finish(19);
+
+              case 27:
+                axios.post('/user', {
+                  title: _this.title,
+                  text: _this.textarea,
+                  marker: JSON.stringify(_this.marker),
+                  image_url: _this.newImages
+                }).then(function (data) {
+                  $('.sidebar').removeClass('active');
+                  vue.$emit('location', data.data);
+                });
+                $('.sidebar').removeClass('active');
+
+              case 29:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, null, [[4, 15, 19, 27], [20,, 22, 26]]);
+      }))();
     },
     previewFiles: function previewFiles(e) {
-      for (var index = 0; index < this.$refs.myFiles.files.length; index++) {
-        this.newImages.push(this.$refs.myFiles.files[index].name);
-      }
+      var _this2 = this;
 
-      var file = e.target.files;
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var file, i, f, reader, vue;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this2.inputFiles = Array.from(event.target.files);
+                file = e.target.files;
 
-      for (var i = 0, f; f = file[i]; i++) {
-        if (!f.type.match('image.*')) {
-          alert("Image only please....");
-        }
+                for (i = 0; f = file[i]; i++) {
+                  if (!f.type.match('image.*')) {
+                    alert("Image only please....");
+                  }
 
-        var reader = new FileReader();
-        var vue = this.previewImages;
+                  reader = new FileReader();
+                  vue = _this2.previewImages;
 
-        reader.onload = function (theFile) {
-          return function (e) {
-            vue.push(e.target.result);
-          };
-        }(f);
+                  reader.onload = function (theFile) {
+                    return function (e) {
+                      vue.push(e.target.result);
+                    };
+                  }(f);
 
-        reader.readAsDataURL(f);
-      }
+                  reader.readAsDataURL(f);
+                }
+
+              case 3:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    uploadsFile: function uploadsFile(item) {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var vue, form;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                vue = _this3;
+                form = new FormData();
+                form.append('image', item);
+                _context4.next = 5;
+                return axios.post('/user/upload', form).then(function (data) {
+                  vue.newImages.push(data.data);
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
     },
     insertData: function insertData(e) {
       alert(); // $('input[name="title"]').val(this.data.title);
@@ -39483,7 +39595,8 @@ var render = function() {
                 method: "POST",
                 action: "/user",
                 id: "createForm",
-                enctype: "multipart/form-data"
+                enctype: "multipart/form-data",
+                onsubmit: "return false;"
               }
             },
             [
@@ -39539,7 +39652,6 @@ var render = function() {
                     type: "file",
                     id: "file",
                     name: "image_url[]",
-                    enctype: "multipart/form-data",
                     multiple: ""
                   },
                   on: { change: _vm.previewFiles }

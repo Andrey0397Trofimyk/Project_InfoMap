@@ -40,7 +40,7 @@ Route::group($goup,function(){
     ->only($methods_user)
     ->names('user')
     ->middleware('userCheck');
-    Route::post('/user/showImages','UserController@showImages');
+    Route::post('/user/upload','UserController@uploads')->name('user.upload');
 });
 
 

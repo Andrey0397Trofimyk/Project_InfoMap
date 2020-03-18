@@ -8,7 +8,7 @@
                 </div>
             </div>
             <!-- onsubmit="return false;" -->
-           <form method='POST' action='/user' id='createForm' enctype="multipart/form-data" >
+           <form method='POST' action='/user' id='createForm' enctype="multipart/form-data" onsubmit="return false;">
                 <input type="hidden" id='tit_loc' name='_token' :value='csrf' >
                 
                 <div class="sidebar-thumbnails col-12" style='height:auto'>
@@ -23,8 +23,9 @@
                 </div>
                 <div class="from-group">
                     <label for="exampleInputEmail1">Картинки</label>
-                    <input type="file" id="file" name='image_url[]' ref="myFiles" enctype="multipart/form-data" 
-                    @change="previewFiles" multiple>
+                    <input type="file" id="file" name='image_url[]' ref="myFiles" 
+                     multiple @change="previewFiles">
+                     <!--  -->
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Заголовок</label>
@@ -129,7 +130,8 @@
                 csrf:$('meta[name="csrf-token"]').attr('content'),
                 contentUser:'false',
                 actionForm:false,
-                review:null
+                review:null,
+                inputFiles:null
             }
         },
         async beforeRouteEnter(to,from,next){
@@ -144,30 +146,30 @@
                 // $('thumbnails img[src="'+'/storage/'+e['image_url']+'"').css('border','1px solid black');
                 console.log($(e.target));
             },
-            createQuery: function() {
-                // let vue = this;
+           async createQuery() {
 
-                // axios
-                // .post('/user',{
-                //     title:this.title,
-                //     text:this.textarea,
-                //     marker:JSON.stringify(this.marker),
-                //     image_url:this.newImages
-                //     image_url:new FormData($('#file')[0])
-                // })
-                // .then(function(data) {
-                //     $('.sidebar').removeClass('active');
-                //     console.log(data.data);
-                //     vue.$emit('location',data.data);
-                // });
+                let vue = this;
+                // let files = Array.from($('#file').files);        
+                for( let item of this.inputFiles) {
+                    await this.uploadsFile(item);
+                }
+                axios
+                .post('/user',{
+                    title:this.title,
+                    text:this.textarea,
+                    marker:JSON.stringify(this.marker),
+                    image_url:this.newImages
+                })
+                .then(function(data) {
+                    $('.sidebar').removeClass('active');
+                    vue.$emit('location',data.data);
+                });
 
                 $('.sidebar').removeClass('active');
             },
-            previewFiles: function(e) {
+            async previewFiles(e) {
+                this.inputFiles = Array.from(event.target.files);
 
-                for (let index = 0; index < this.$refs.myFiles.files.length; index++) {
-                    this.newImages.push(this.$refs.myFiles.files[index].name);
-                }
                 var file = e.target.files; 
                 for (var i = 0, f; f = file[i]; i++) {
 
@@ -183,6 +185,16 @@
                     })(f);
                     reader.readAsDataURL(f);
                 } 
+            },
+            async uploadsFile(item){
+                let vue = this;
+                let form = new FormData();
+                form.append('image',item);
+                await axios.post('/user/upload',form)
+                .then(function(data){
+                    vue.newImages.push(data.data);
+                })
+                .catch(error => {console.log(error)});
             },
             insertData: function(e) {
                 alert();

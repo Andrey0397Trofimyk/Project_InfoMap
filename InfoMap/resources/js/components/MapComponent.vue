@@ -42,17 +42,15 @@
 		accessCreate: false,
 		}),
 		methods: {
+			// freate marker
 			createMarker(e){
-				// this.$emit('closeWindow');
-				
 				$('.sidebar').removeClass('active');
 				this.accessCreate = true;
 			},
+			// function map click
 			onMapClick(e) {
-				// console.log(new google.maps.LatLng( e.latLng ));
-				// console.log(number(e.latLng));
-				console.log(e.latLng.lat())
-                console.log(e.latLng.lng())
+				// console.log(e.latLng.lat());
+				// console.log(e.latLng.lng());
 				if(this.accessCreate && !this.actionForm) {
 					this.markers.push({
 						position: e.latLng
@@ -70,40 +68,38 @@
 					}
 				}
 			},
+			// function marker click
 			onMarkerClick(e,i,m_p) {
-				console.log(m_p.latLng.lat());
-                console.log(m_p.latLng.lng());
 				this.accessCreate = false;
 				this.center = {
 					lat: e.lat ,
 					lng: e.lng 
 				}
 				this.infoLocation.forEach(element => {
-					if(element['marker'] == '{"lat":'+e.lat+',"lng":'+e.lng+'}') {
-						
-						this.markerId = element['id'];
-						this.$emit('position',element['id']);
+					if(this.newLocation.length == 0) {
+						if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+							this.markerId = element['id'];
+							this.$emit('position',element['id']);
+						}
+					} else{
+						for (let index = 0; index < this.newLocation.length; index++) {
+							if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+							this.markerId = element['id'];
+							this.$emit('position',element['id']);
+							}	
+						}
 					}
-						// for (let index = 0; index < this.newLocation.length; index++) {
-						// 	// const element = array[index];
-						// 	console.log(element['marker'] + ' ||| ' +this.newLocation[index]['marker']);
-						// 	if(element['marker'] == '{"lat":'+e.lat+',"lng":'+e.lng+'}' || element['marker'] == this.newLocation[index]['marker']) {
-						// 	console.log('+');
-						// 	alert('openLocation');
-						// 	this.markerId = element['id'];
-						// 	// this.$emit('position',element['id']);
-						// 	}	
-						// }
 				})
 			}
 		},
 		watch:{
+			// add new location to list
 			newLocation:function() {
 				this.newLocation.forEach(element => {
 					this.infoLocation.push(element);
 				});
-				// this.infoLocation.push(this.newLocation);
 			},
+			// drop marker
 			deleteMarker: function() {
 
 				for (let index = 0; index < this.markers.length; index++) {
@@ -119,6 +115,7 @@
 				}	
 			}
 		},
+		// add marker to map
 		mounted() {
 			this.infoLocation.forEach((element) => {
 				this.markers.push({

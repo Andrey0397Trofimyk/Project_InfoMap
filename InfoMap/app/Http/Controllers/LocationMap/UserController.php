@@ -27,16 +27,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -60,18 +50,19 @@ class UserController extends Controller
     
             foreach ($request->image_url as $key => $value) {
                 // dd($key);
-                $path = $request->file('image_url')[$key]->store('location_images','public');
+                // $path = $request->file('image_url')[$key]->store('location_images','public');
                 $image = new Image;
                 $image->fill(
                     [
-                        'location_id'=>2,
-                        'image_url'=>$path
+                        'location_id'=>$location->id,
+                        'image_url'=>$value
                     ]
                 );
                 $image->save();
             }
      
-            return redirect()->route('user.index');
+            // return redirect()->route('user.index');
+            return $location;
         }else{
             dd(2);
             $comment = new Comment;
@@ -85,28 +76,6 @@ class UserController extends Controller
             // return $request->all();
             return redirect()->route('user.index');
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -129,13 +98,16 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        // $location = new Location;
-        // $marker = Location::where('id',$id)->marker;
         Location::destroy($id);
-        // dd($id);
-        // return $marker;
     }
-    public function showImages() {
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function uploads(Request $request) {
+        $path = $request->file('image')->store('location_images','public');
+        return $path;
     }
 }

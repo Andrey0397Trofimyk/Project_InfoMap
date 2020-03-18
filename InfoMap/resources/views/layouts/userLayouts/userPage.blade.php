@@ -30,6 +30,9 @@
         </sidebar-component>
         
     </div>
+    <div class="newfrom" col-12>
+        
+    </div>
 
     <!-- Modal windows with lodin -->
     <div class="modal fade" id="initWindow" tabindex="-1" role="dialog" aria-hidden="true">
