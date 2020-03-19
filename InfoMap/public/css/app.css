@@ -16946,6 +16946,10 @@ body i {
   transition: 1s;
 }
 
+.wrapper .sidebar p {
+  word-wrap: break-word;
+}
+
 .wrapper .sidebar .actionForm {
   padding: 0px;
 }

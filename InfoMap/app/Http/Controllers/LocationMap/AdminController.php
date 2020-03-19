@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\LocationMap;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\User;
+use App\Location;
+use App\Comment;
+use App\Image;
 class AdminController extends Controller
 {
     /**
@@ -13,7 +16,11 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('layouts.adminLayouts.adminPage');
+        $locations = new Location;
+        $comments = new Comment;
+        $images = new Image;
+
+        return view('layouts.adminLayouts.adminPage',compact('locations','comments','images'));
     }
 
     /**

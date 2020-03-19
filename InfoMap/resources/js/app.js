@@ -9,7 +9,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 import * as VueGoogleMaps from 'vue2-google-maps';
+// import VueRouter from 'vue-router'
 
+// Vue.use(VueRouter)
 
 Vue.use(VueGoogleMaps, {
     load: {
@@ -18,6 +20,7 @@ Vue.use(VueGoogleMaps, {
 
     },
   })
+
 
 
 /**
@@ -33,9 +36,29 @@ Vue.use(VueGoogleMaps, {
 
 Vue.component('gmap-component', require('./components/MapComponent.vue').default);
 Vue.component('sidebar-component', require('./components/SidebarComponent.vue').default);
-// Vue.component('userform-component', require('./components/UserFormComponent.vue').default);
+Vue.component('list-component', require('./components/AdminListLocationComponent.vue').default);
 
+// import App from './components/AdminListLocationComponent.vue';
 
+// import Map from './components/AdminMapComponent.vue';
+// import Location from './components/AdminLocationComponent.vue'
+
+// // Vue router
+// const router = new VueRouter({
+//     mode: 'history',
+//     routes: [
+//         {
+//             path: '/',
+//             name: 'map',
+//             component: Map
+//         },
+//         {
+//             path: '/location',
+//             name: 'location',
+//             component: Location,
+//         },
+//     ],
+// });
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -44,6 +67,10 @@ Vue.component('sidebar-component', require('./components/SidebarComponent.vue').
  */
 const app = new Vue({
     el: '#warder',
+    
+    // components: { Map,Location },
+    // router,
+
     data() {
         return {
             items:['login','register'],
@@ -119,7 +146,14 @@ const app = new Vue({
         }
     }
 });
-
+// const app2 = new Vue({
+//     el:'#admin',
+//     data() {
+//         return{
+//             'data':'log'
+//         }
+//     }
+// });
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
