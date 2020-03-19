@@ -142,7 +142,8 @@
                 inputFiles:null,
                 markerPosition:null,
                 createquery:false,
-                insertquery:false
+                insertquery:false,
+                // newform:false
             }
         },
         async beforeRouteEnter(to,from,next){
@@ -168,7 +169,8 @@
                     for( let item of this.inputFiles) {
                         await this.uploadsFile(item);
                     }
-                }    
+                }
+                // alert();    
                 axios
                 .post('/user',{
                     title:this.title,
@@ -182,7 +184,7 @@
                     $('.sidebar-image').css('background-image','url("")');
                     vue.closeForm();
                 });
-                
+                this.createquery = false;
                 $('.sidebar').removeClass('active');
             },
             async previewFiles(e) {
@@ -215,7 +217,7 @@
                 .catch(error => {console.log(error)});
             },
             insertData: function(e) {
-                
+                this.$emit('insertform');
                 this.createquery = false;
                 this.insertquery = true;
                 this.title = this.data.title;
@@ -243,7 +245,7 @@
                     old_image_url:this.removeImages
                 })
                 .then(function(data) {
-                    alert('success');
+                    // alert('success');
                     $('.sidebar').removeClass('active');
                     $('.sidebar-image').css('background-image','url("")');
                     vue.closeForm();
@@ -258,12 +260,12 @@
             closeForm:function() {
                 $('.sidebar').removeClass('active');
                 document.querySelectorAll('input, textarea').forEach(el=>el.value = '');
-                this.actionForm = false;
-                this.$emit('actform');
+
+                // this.actionForm = false;
+                this.$emit('actform',this.createquery);
                 this.title = null;
                 this.textarea = null;
                 this.previewImages = [];
-                this.actionForm =false;
             },
             createComment: function(e) {
                 axios
@@ -319,6 +321,7 @@
             data:function() {
                 $('.sidebar').addClass('active');
                 // console.log(this.data.user_id +' == '+ this.userId);
+                
                 if(this.data.user_id == this.userId) {
                     this.contentUser = true;
                 }else {

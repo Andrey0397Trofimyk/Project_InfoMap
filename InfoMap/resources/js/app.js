@@ -56,12 +56,13 @@ const app = new Vue({
             locationId:999,
             locationMarker:null,
             locationNew:[],
+            newMarker:false,
         }
     },
     methods: {
         insertPosition: function(e) {
-
             this.actionForm = false;
+            
             axios
             .get('/images/'+e)
             .then(data => (this.images = data['data']));
@@ -78,12 +79,11 @@ const app = new Vue({
             this.actionForm = true;
         },
         addNewLocation:function(e) {
-
-             this.locationNew.push(e);
+            this.newMarker = false;
+            this.locationNew.push(e);
             $('.sidebar').removeClass('active');
         },
         task:function() {
-            alert('+');
         },
         removeData: function(e) {
             
@@ -100,8 +100,17 @@ const app = new Vue({
         revLocation: function(e) {
             this.locationId = e;
         },
-        actForm:function() {
+        insertForm: function(){
+            this.actionForm = true;
+        },
+        actForm:function(e) {
             this.actionForm = false;
+            if(e == true) {
+                this.newMarker = true;
+            }
+        },
+        removeMark:function() {
+            this.newMarker = false;
         }
     },
     watch: {

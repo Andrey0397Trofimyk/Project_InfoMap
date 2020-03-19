@@ -7,10 +7,12 @@
         :info-location='{{$locations->get()}}'
         :new-location='locationNew'
         :user-id='{{Auth::user()->id}}'
-        @position='insertPosition($event)'
-        @form='openForm($event)'
         :delete-marker='locationMarker'
         :action-form='actionForm'
+        :new-marker='newMarker'
+        @position='insertPosition($event)'
+        @form='openForm($event)'
+        @removemark = 'removeMark'
         ></gmap-component>
     </div>
     <!-- Sidebar -->
@@ -24,7 +26,8 @@
         :marker='mapPosition'
         @location='addNewLocation($event)'
         @removeloc='revLocation($event)'
-        @actform = 'actForm()'
+        @actform = 'actForm($event)'
+        @insertform = 'insertForm'
         >
         </sidebar-component>
         

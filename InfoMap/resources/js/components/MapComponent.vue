@@ -33,7 +33,8 @@
 		userId:null,
 		newLocation:null,
 		deleteMarker:null,
-		actionForm:null
+		actionForm:null,
+		newMarker:false
 		},
 		data: () => ({
 		center:{lat:51.1518032,lng:23.6378023},
@@ -46,12 +47,10 @@
 			createMarker(e){
 				$('.sidebar').removeClass('active');
 				this.accessCreate = true;
+				// this.newMarker = true;
 			},
 			// function map click
 			onMapClick(e) {
-				// console.log(e.latLng.lat());
-				// console.log(e.latLng.lng());
-				console.log(this.accessCreate +' && '+ !this.actionForm)
 				if(this.accessCreate && !this.actionForm) {
 					this.markers.push({
 						position: e.latLng
@@ -61,6 +60,7 @@
 					this.$emit('form',e.latLng);
 					this.accessCreate = false;
 					$('.sidebar').addClass('active');
+					// this.newMarker = true;
 				}else {
 					if(this.actionForm == true) {
 						alert('Ви не зберегли зміни!!!');
@@ -110,8 +110,10 @@
 				}
 			},
 			actionForm: function() {
-				if(this.actionForm == false) {
+
+				if(this.newMarker == true) {
 					this.markers.pop();
+					this.$emit('removemark');
 				}	
 			}
 		},

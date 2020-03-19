@@ -1954,7 +1954,8 @@ __webpack_require__.r(__webpack_exports__);
     userId: null,
     newLocation: null,
     deleteMarker: null,
-    actionForm: null
+    actionForm: null,
+    newMarker: false
   },
   data: function data() {
     return {
@@ -1971,14 +1972,10 @@ __webpack_require__.r(__webpack_exports__);
     // freate marker
     createMarker: function createMarker(e) {
       $('.sidebar').removeClass('active');
-      this.accessCreate = true;
+      this.accessCreate = true; // this.newMarker = true;
     },
     // function map click
     onMapClick: function onMapClick(e) {
-      // console.log(e.latLng.lat());
-      // console.log(e.latLng.lng());
-      console.log(this.accessCreate + ' && ' + !this.actionForm);
-
       if (this.accessCreate && !this.actionForm) {
         this.markers.push({
           position: e.latLng
@@ -1987,7 +1984,7 @@ __webpack_require__.r(__webpack_exports__);
         this.center = e.latLng;
         this.$emit('form', e.latLng);
         this.accessCreate = false;
-        $('.sidebar').addClass('active');
+        $('.sidebar').addClass('active'); // this.newMarker = true;
       } else {
         if (this.actionForm == true) {
           alert('Ви не зберегли зміни!!!');
@@ -2005,6 +2002,7 @@ __webpack_require__.r(__webpack_exports__);
         lat: e.lat,
         lng: e.lng
       };
+      console.log(this.newLocation);
       this.infoLocation.forEach(function (element) {
         if (_this.newLocation.length == 0) {
           if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
@@ -2013,6 +2011,8 @@ __webpack_require__.r(__webpack_exports__);
             _this.$emit('position', element['id']);
           }
         } else {
+          alert();
+
           for (var index = 0; index < _this.newLocation.length; index++) {
             if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
               _this.markerId = element['id'];
@@ -2044,8 +2044,9 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     actionForm: function actionForm() {
-      if (this.actionForm == false) {
+      if (this.newMarker == true) {
         this.markers.pop();
+        this.$emit('removemark');
       }
     }
   },
@@ -2216,7 +2217,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       inputFiles: null,
       markerPosition: null,
       createquery: false,
-      insertquery: false
+      insertquery: false // newform:false
+
     };
   },
   beforeRouteEnter: function beforeRouteEnter(to, from, next) {
@@ -2324,6 +2326,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context2.finish(20);
 
               case 28:
+                // alert();    
                 axios.post('/user', {
                   title: _this.title,
                   text: _this.textarea,
@@ -2335,9 +2338,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   $('.sidebar-image').css('background-image', 'url("")');
                   vue.closeForm();
                 });
+                _this.createquery = false;
                 $('.sidebar').removeClass('active');
 
-              case 30:
+              case 31:
               case "end":
                 return _context2.stop();
             }
@@ -2412,6 +2416,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     insertData: function insertData(e) {
       var _this4 = this;
 
+      this.$emit('insertform');
       this.createquery = false;
       this.insertquery = true;
       this.title = this.data.title;
@@ -2501,7 +2506,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   image_url: _this5.newImages,
                   old_image_url: _this5.removeImages
                 }).then(function (data) {
-                  alert('success');
+                  // alert('success');
                   $('.sidebar').removeClass('active');
                   $('.sidebar-image').css('background-image', 'url("")');
                   vue.closeForm(); // vue.$emit('location',data.data);
@@ -2523,13 +2528,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       $('.sidebar').removeClass('active');
       document.querySelectorAll('input, textarea').forEach(function (el) {
         return el.value = '';
-      });
-      this.actionForm = false;
-      this.$emit('actform');
+      }); // this.actionForm = false;
+
+      this.$emit('actform', this.createquery);
       this.title = null;
       this.textarea = null;
       this.previewImages = [];
-      this.actionForm = false;
     },
     createComment: function createComment(e) {
       axios.post('/user', {
@@ -2578,6 +2582,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
     },
     activForm: function activForm() {
+      // alert();
+      // this.newform = true;
       this.createquery = true;
       this.insertquery = false;
       this.markerPosition = this.marker;
@@ -54886,7 +54892,8 @@ var app = new Vue({
       actionForm: false,
       locationId: 999,
       locationMarker: null,
-      locationNew: []
+      locationNew: [],
+      newMarker: false
     };
   },
   methods: {
@@ -54909,12 +54916,11 @@ var app = new Vue({
       this.actionForm = true;
     },
     addNewLocation: function addNewLocation(e) {
+      this.newMarker = false;
       this.locationNew.push(e);
       $('.sidebar').removeClass('active');
     },
-    task: function task() {
-      alert('+');
-    },
+    task: function task() {},
     removeData: function removeData(e) {
       $.ajax({
         url: "/user/" + e,
@@ -54928,8 +54934,18 @@ var app = new Vue({
     revLocation: function revLocation(e) {
       this.locationId = e;
     },
-    actForm: function actForm() {
+    insertForm: function insertForm() {
+      this.actionForm = true;
+    },
+    actForm: function actForm(e) {
       this.actionForm = false;
+
+      if (e == true) {
+        this.newMarker = true;
+      }
+    },
+    removeMark: function removeMark() {
+      this.newMarker = false;
     }
   },
   watch: {

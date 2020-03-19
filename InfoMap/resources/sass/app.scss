@@ -127,6 +127,9 @@ body{
         top:-400px;
         left:-1000px;
         transition: 1s;
+            p{
+                word-wrap: break-word;
+            }
         // Sidebar basic image
         .actionForm {
             padding:0px;
