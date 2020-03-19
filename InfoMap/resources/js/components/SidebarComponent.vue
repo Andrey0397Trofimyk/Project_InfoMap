@@ -8,12 +8,8 @@
                 </div>
             </div>
             <!-- onsubmit="return false;" -->
-           <form method='POST' :action="'/user/' + data.id" id='createForm' enctype="multipart/form-data">
+           <form method='POST' id='createForm' enctype="multipart/form-data" onsubmit="return false;">
                 
-                <!-- PUT -->
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name='masImg' :value='removeImages'>
-                <!-- /PUT -->
                 <input type="hidden" id='tit_loc' name='_token' :value='csrf' >
                 
                 <div class="sidebar-thumbnails col-12" style='height:auto'>
@@ -42,8 +38,10 @@
                     <textarea v-model='textarea' id='textarea' class="form-control" name='text' rows="3"></textarea>
                 </div>
                 <input type="hidden" name='marker' :value='JSON.stringify(this.marker)'>
-                <button type="submit" class="btn btn-primary">Створити</button>
+                <button type="submit" v-if='createquery' @click='createQuery()' class="btn btn-primary">Створити</button>
+                <button type="submit" v-if='insertquery' @click='insertQuery()' class="btn btn-primary">Створити</button>
                 <!-- @click='createQuery()' -->
+                <!-- @click='insertQuery()' -->
             </form>
         </div>
         <div class="informationLocation" v-else>
@@ -142,7 +140,9 @@
                 actionForm:false,
                 review:null,
                 inputFiles:null,
-                markerPosition:null
+                markerPosition:null,
+                createquery:false,
+                insertquery:false
             }
         },
         async beforeRouteEnter(to,from,next){
@@ -153,17 +153,18 @@
         },
         methods: {
             seeImage: function(e) {
-                $('.sidebar-image').css('background-image','url("storage/'+e['image_url']+'")');
+                $('.sidebar-image').css('background-image','url("storage/'+e['image_url']?e['image_url']:''+'")');
                 
             },
             seeImageForm: function(e) {
-                $('.sidebar-image').css('background-image','url("'+e+'")');
+                console.log(e);
+                $('.sidebar-image').css('background-image','url("'+e?e:''+'")');
             },
            async createQuery() {
-               $('.sidebar-image').css('background-image','url("")');
+               
 
                 let vue = this;
-                if(this.inputFiles == null) {
+                if(this.inputFiles != null) {
                     for( let item of this.inputFiles) {
                         await this.uploadsFile(item);
                     }
@@ -178,12 +179,13 @@
                 .then(function(data) {
                     $('.sidebar').removeClass('active');
                     vue.$emit('location',data.data);
+                    $('.sidebar-image').css('background-image','url("")');
+                    vue.closeForm();
                 });
                 
                 $('.sidebar').removeClass('active');
             },
             async previewFiles(e) {
-                // console.log(event.target.files);
                 this.inputFiles = Array.from(event.target.files);
 
                 var file = e.target.files; 
@@ -213,15 +215,42 @@
                 .catch(error => {console.log(error)});
             },
             insertData: function(e) {
-                alert();
-
+                
+                this.createquery = false;
+                this.insertquery = true;
                 this.title = this.data.title;
                 this.textarea = this.data.text;
                 this.imagesUrl.forEach(el => {
-                    this.previewImages.push('/storage/'+ el.image_url);
+                    this.previewImages.push('/storage/' +el.image_url);
                 })
                 this.seeImageForm(this.previewImages[0]);
                 this.actionForm = true;
+            },
+            async insertQuery(e) {
+                
+                
+                let vue = this;
+                if(this.inputFiles != null) {
+                    for( let item of this.inputFiles) {
+                        await this.uploadsFile(item);
+                    }
+                }  
+                axios
+                .put('/user/'+this.data.id,{
+                    title:this.title,
+                    text:this.textarea,
+                    image_url:this.newImages,
+                    old_image_url:this.removeImages
+                })
+                .then(function(data) {
+                    alert('success');
+                    $('.sidebar').removeClass('active');
+                    $('.sidebar-image').css('background-image','url("")');
+                    vue.closeForm();
+                    // vue.$emit('location',data.data);
+                });
+                
+                $('.sidebar').removeClass('active');
             },
             removeData: function(e) {
                 this.$emit('removeloc',e);
@@ -234,6 +263,7 @@
                 this.title = null;
                 this.textarea = null;
                 this.previewImages = [];
+                this.actionForm =false;
             },
             createComment: function(e) {
                 axios
@@ -276,15 +306,11 @@
                 });
             },
             removePreviewImage:function(e) {
-                for (let index = 0; index < this.previewImages.length; index++) {
-                    // console.log(this.previewImages[index].substr(0,8));
-                    // if(this.previewImages[index].substr(0,7) != '/storage') {
-                        // console.log(this.inputFiles);
-                    // }else 
+                for (let index = 0; index < this.previewImages.length; index++) { 
                     console.log(this.previewImages[index] + ' == '+  e);
                     if(this.previewImages[index] == e) {
                         this.previewImages.splice(index,1);
-                        this.removeImages.push(e);
+                        this.removeImages.push(e.substr(9));
                     }
                 }
             }
@@ -298,14 +324,22 @@
                 }else {
                     this.contentUser = false;
                 }
-                if(this.imagesUrl) {
+                if(this.imagesUrl.length != 0) {
                     $('.sidebar-image').css('background-image','url("storage/'+this.imagesUrl[0]['image_url']+'")');
+                }else{
+                    $('.sidebar-image').css('background-image','url("")');
                 }
             },
             previewImages:function() {
-                 $('.sidebar-image').css('background-image','url("'+this.previewImages[0]+'")');
+                if(this.previewImages.length != 0) {
+                    $('.sidebar-image').css('background-image','url("'+this.previewImages[0]+'")');
+                }else{
+                    $('.sidebar-image').css('background-image','url("")');
+                }
             },
             activForm:function() {
+                this.createquery = true;
+                this.insertquery = false;
                 this.markerPosition = this.marker;
                 this.actionForm = this.activForm;
             }

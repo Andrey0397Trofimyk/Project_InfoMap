@@ -51,6 +51,7 @@
 			onMapClick(e) {
 				// console.log(e.latLng.lat());
 				// console.log(e.latLng.lng());
+				console.log(this.accessCreate +' && '+ !this.actionForm)
 				if(this.accessCreate && !this.actionForm) {
 					this.markers.push({
 						position: e.latLng
@@ -75,9 +76,6 @@
 					lat: e.lat ,
 					lng: e.lng 
 				}
-				// console.log(e);
-				// console.log(i);
-				// console.log(m_p);
 				this.infoLocation.forEach(element => {
 					if(this.newLocation.length == 0) {
 						if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {

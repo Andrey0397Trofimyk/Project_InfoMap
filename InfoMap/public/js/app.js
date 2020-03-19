@@ -1977,6 +1977,8 @@ __webpack_require__.r(__webpack_exports__);
     onMapClick: function onMapClick(e) {
       // console.log(e.latLng.lat());
       // console.log(e.latLng.lng());
+      console.log(this.accessCreate + ' && ' + !this.actionForm);
+
       if (this.accessCreate && !this.actionForm) {
         this.markers.push({
           position: e.latLng
@@ -2002,10 +2004,7 @@ __webpack_require__.r(__webpack_exports__);
       this.center = {
         lat: e.lat,
         lng: e.lng
-      }; // console.log(e);
-      // console.log(i);
-      // console.log(m_p);
-
+      };
       this.infoLocation.forEach(function (element) {
         if (_this.newLocation.length == 0) {
           if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
@@ -2198,8 +2197,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['data', 'marker', 'imagesUrl', 'comments', 'userId', 'activForm'],
   data: function data() {
@@ -2217,7 +2214,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       actionForm: false,
       review: null,
       inputFiles: null,
-      markerPosition: null
+      markerPosition: null,
+      createquery: false,
+      insertquery: false
     };
   },
   beforeRouteEnter: function beforeRouteEnter(to, from, next) {
@@ -2246,10 +2245,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   methods: {
     seeImage: function seeImage(e) {
-      $('.sidebar-image').css('background-image', 'url("storage/' + e['image_url'] + '")');
+      $('.sidebar-image').css('background-image',  true ? e['image_url'] : undefined);
     },
     seeImageForm: function seeImageForm(e) {
-      $('.sidebar-image').css('background-image', 'url("' + e + '")');
+      console.log(e);
+      $('.sidebar-image').css('background-image',  true ? e : undefined);
     },
     createQuery: function createQuery() {
       var _this = this;
@@ -2261,70 +2261,69 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                $('.sidebar-image').css('background-image', 'url("")');
                 vue = _this;
 
-                if (!(_this.inputFiles == null)) {
-                  _context2.next = 29;
+                if (!(_this.inputFiles != null)) {
+                  _context2.next = 28;
                   break;
                 }
 
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
                 _iteratorError = undefined;
-                _context2.prev = 6;
+                _context2.prev = 5;
                 _iterator = _this.inputFiles[Symbol.iterator]();
 
-              case 8:
+              case 7:
                 if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context2.next = 15;
+                  _context2.next = 14;
                   break;
                 }
 
                 item = _step.value;
-                _context2.next = 12;
+                _context2.next = 11;
                 return _this.uploadsFile(item);
 
-              case 12:
+              case 11:
                 _iteratorNormalCompletion = true;
-                _context2.next = 8;
+                _context2.next = 7;
                 break;
 
-              case 15:
-                _context2.next = 21;
+              case 14:
+                _context2.next = 20;
                 break;
 
-              case 17:
-                _context2.prev = 17;
-                _context2.t0 = _context2["catch"](6);
+              case 16:
+                _context2.prev = 16;
+                _context2.t0 = _context2["catch"](5);
                 _didIteratorError = true;
                 _iteratorError = _context2.t0;
 
-              case 21:
+              case 20:
+                _context2.prev = 20;
                 _context2.prev = 21;
-                _context2.prev = 22;
 
                 if (!_iteratorNormalCompletion && _iterator["return"] != null) {
                   _iterator["return"]();
                 }
 
-              case 24:
-                _context2.prev = 24;
+              case 23:
+                _context2.prev = 23;
 
                 if (!_didIteratorError) {
-                  _context2.next = 27;
+                  _context2.next = 26;
                   break;
                 }
 
                 throw _iteratorError;
 
+              case 26:
+                return _context2.finish(23);
+
               case 27:
-                return _context2.finish(24);
+                return _context2.finish(20);
 
               case 28:
-                return _context2.finish(21);
-
-              case 29:
                 axios.post('/user', {
                   title: _this.title,
                   text: _this.textarea,
@@ -2333,15 +2332,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (data) {
                   $('.sidebar').removeClass('active');
                   vue.$emit('location', data.data);
+                  $('.sidebar-image').css('background-image', 'url("")');
+                  vue.closeForm();
                 });
                 $('.sidebar').removeClass('active');
 
-              case 31:
+              case 30:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[6, 17, 21, 29], [22,, 24, 28]]);
+        }, _callee2, null, [[5, 16, 20, 28], [21,, 23, 27]]);
       }))();
     },
     previewFiles: function previewFiles(e) {
@@ -2353,7 +2354,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                // console.log(event.target.files);
                 _this2.inputFiles = Array.from(event.target.files);
                 file = e.target.files;
 
@@ -2412,7 +2412,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     insertData: function insertData(e) {
       var _this4 = this;
 
-      alert();
+      this.createquery = false;
+      this.insertquery = true;
       this.title = this.data.title;
       this.textarea = this.data.text;
       this.imagesUrl.forEach(function (el) {
@@ -2420,6 +2421,100 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
       this.seeImageForm(this.previewImages[0]);
       this.actionForm = true;
+    },
+    insertQuery: function insertQuery(e) {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
+        var vue, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, item;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                vue = _this5;
+
+                if (!(_this5.inputFiles != null)) {
+                  _context5.next = 28;
+                  break;
+                }
+
+                _iteratorNormalCompletion2 = true;
+                _didIteratorError2 = false;
+                _iteratorError2 = undefined;
+                _context5.prev = 5;
+                _iterator2 = _this5.inputFiles[Symbol.iterator]();
+
+              case 7:
+                if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+                  _context5.next = 14;
+                  break;
+                }
+
+                item = _step2.value;
+                _context5.next = 11;
+                return _this5.uploadsFile(item);
+
+              case 11:
+                _iteratorNormalCompletion2 = true;
+                _context5.next = 7;
+                break;
+
+              case 14:
+                _context5.next = 20;
+                break;
+
+              case 16:
+                _context5.prev = 16;
+                _context5.t0 = _context5["catch"](5);
+                _didIteratorError2 = true;
+                _iteratorError2 = _context5.t0;
+
+              case 20:
+                _context5.prev = 20;
+                _context5.prev = 21;
+
+                if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                  _iterator2["return"]();
+                }
+
+              case 23:
+                _context5.prev = 23;
+
+                if (!_didIteratorError2) {
+                  _context5.next = 26;
+                  break;
+                }
+
+                throw _iteratorError2;
+
+              case 26:
+                return _context5.finish(23);
+
+              case 27:
+                return _context5.finish(20);
+
+              case 28:
+                axios.put('/user/' + _this5.data.id, {
+                  title: _this5.title,
+                  text: _this5.textarea,
+                  image_url: _this5.newImages,
+                  old_image_url: _this5.removeImages
+                }).then(function (data) {
+                  alert('success');
+                  $('.sidebar').removeClass('active');
+                  $('.sidebar-image').css('background-image', 'url("")');
+                  vue.closeForm(); // vue.$emit('location',data.data);
+                });
+                $('.sidebar').removeClass('active');
+
+              case 30:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, null, [[5, 16, 20, 28], [21,, 23, 27]]);
+      }))();
     },
     removeData: function removeData(e) {
       this.$emit('removeloc', e);
@@ -2434,6 +2529,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.title = null;
       this.textarea = null;
       this.previewImages = [];
+      this.actionForm = false;
     },
     createComment: function createComment(e) {
       axios.post('/user', {
@@ -2449,15 +2545,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     removePreviewImage: function removePreviewImage(e) {
       for (var index = 0; index < this.previewImages.length; index++) {
-        // console.log(this.previewImages[index].substr(0,8));
-        // if(this.previewImages[index].substr(0,7) != '/storage') {
-        // console.log(this.inputFiles);
-        // }else 
         console.log(this.previewImages[index] + ' == ' + e);
 
         if (this.previewImages[index] == e) {
           this.previewImages.splice(index, 1);
-          this.removeImages.push(e);
+          this.removeImages.push(e.substr(9));
         }
       }
     }
@@ -2472,14 +2564,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.contentUser = false;
       }
 
-      if (this.imagesUrl) {
+      if (this.imagesUrl.length != 0) {
         $('.sidebar-image').css('background-image', 'url("storage/' + this.imagesUrl[0]['image_url'] + '")');
+      } else {
+        $('.sidebar-image').css('background-image', 'url("")');
       }
     },
     previewImages: function previewImages() {
-      $('.sidebar-image').css('background-image', 'url("' + this.previewImages[0] + '")');
+      if (this.previewImages.length != 0) {
+        $('.sidebar-image').css('background-image', 'url("' + this.previewImages[0] + '")');
+      } else {
+        $('.sidebar-image').css('background-image', 'url("")');
+      }
     },
     activForm: function activForm() {
+      this.createquery = true;
+      this.insertquery = false;
       this.markerPosition = this.marker;
       this.actionForm = this.activForm;
     }
@@ -39636,21 +39736,12 @@ var render = function() {
             {
               attrs: {
                 method: "POST",
-                action: "/user/" + _vm.data.id,
                 id: "createForm",
-                enctype: "multipart/form-data"
+                enctype: "multipart/form-data",
+                onsubmit: "return false;"
               }
             },
             [
-              _c("input", {
-                attrs: { type: "hidden", name: "_method", value: "PUT" }
-              }),
-              _vm._v(" "),
-              _c("input", {
-                attrs: { type: "hidden", name: "masImg" },
-                domProps: { value: _vm.removeImages }
-              }),
-              _vm._v(" "),
               _c("input", {
                 attrs: { type: "hidden", id: "tit_loc", name: "_token" },
                 domProps: { value: _vm.csrf }
@@ -39784,11 +39875,37 @@ var render = function() {
                 domProps: { value: JSON.stringify(this.marker) }
               }),
               _vm._v(" "),
-              _c(
-                "button",
-                { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-                [_vm._v("Створити")]
-              )
+              _vm.createquery
+                ? _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          return _vm.createQuery()
+                        }
+                      }
+                    },
+                    [_vm._v("Створити")]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.insertquery
+                ? _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          return _vm.insertQuery()
+                        }
+                      }
+                    },
+                    [_vm._v("Створити")]
+                  )
+                : _vm._e()
             ]
           )
         ])

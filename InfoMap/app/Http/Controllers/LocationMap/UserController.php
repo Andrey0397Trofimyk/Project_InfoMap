@@ -85,20 +85,38 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $image = new Image;
-        $image->where('location_id',$id)->get();
+        // dd(mb_substr($request->masImg,9,28));
+        // dd($image->where('image_url',mb_substr($request->masImg,9,28))->first());
+        
+        // $image->where('location_id',$id)->get();
+
         foreach ($image->where('location_id',$id)->get() as $key => $value) {
             if($value['image_url'] == mb_substr($request->masImg,9)) {
-                Image::destroy($value['id']);
+                // Image::destroy($value['id']);
             }
+        }
+        foreach($request->old_image_url as $value) {
+            if($image->where('image_url',$value,9)->first()['image_url']) {
+                Image::destroy($image->where('image_url',$value)->first()['id']);
+            }
+        }
+        foreach ($request->image_url as $key => $value) {
+            $image = new Image;
+            $image->fill(
+                [
+                    'location_id'=>$id,
+                    'image_url'=>$value
+                ]);
+            $image->save();
         }
 
         $location = Location::find($id);
         $location->title = $request->title;
         $location->text = $request->text;
         $location->save();
-        return redirect()->route('user.index');
+        // return redirect()->route('user.index');
+        return $location;
     }
 
     /**
