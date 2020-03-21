@@ -43,7 +43,7 @@ class UserController extends Controller
                 'user_id'=>Auth::id(),
                 'title'=>$request->title,
                 'text'=>$request->text,
-                'marker'=>$request->marker
+                // 'marker'=>$request->marker
             ]);
             $location->save();
     
@@ -86,18 +86,9 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $image = new Image;
-        // dd(mb_substr($request->masImg,9,28));
-        // dd($image->where('image_url',mb_substr($request->masImg,9,28))->first());
-        
-        // $image->where('location_id',$id)->get();
 
-        foreach ($image->where('location_id',$id)->get() as $key => $value) {
-            if($value['image_url'] == mb_substr($request->masImg,9)) {
-                // Image::destroy($value['id']);
-            }
-        }
         foreach($request->old_image_url as $value) {
-            if($image->where('image_url',$value,9)->first()['image_url']) {
+            if($image->where('image_url',$value)->first()['image_url']) {
                 Image::destroy($image->where('image_url',$value)->first()['id']);
             }
         }
@@ -138,17 +129,5 @@ class UserController extends Controller
     public function uploads(Request $request) {
         $path = $request->file('image')->store('location_images','public');
         return $path;
-    }
-    public function com(Request $request) {
-        // dd($request->all());
-        // $comment = new Comment;
-        //     $comment->fill([
-        //         'user_id'=>Auth::user()->id,
-        //         'location_id'=>$request->location_id,
-        //         'surname'=>Auth::user()->name,
-        //         'review'=>$request->review
-        //     ]);
-        //     $comment->save();
-        // return redirect()->route('user.index');
     }
 }

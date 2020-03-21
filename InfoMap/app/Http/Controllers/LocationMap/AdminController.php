@@ -30,7 +30,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        //
+        return redirect()->route('admin.index');
     }
 
     /**
@@ -41,7 +41,7 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -53,6 +53,7 @@ class AdminController extends Controller
     public function show($id)
     {
         //
+        return redirect()->route('admin.index');
     }
 
     /**
@@ -75,7 +76,29 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $image = new Image;
+        
+        foreach($request->old_image_url as $value) {
+            if($image->where('image_url',$value)->first()['image_url']) {
+                Image::destroy($image->where('image_url',$value)->first()['id']);
+            }
+        }
+        foreach ($request->image_url as $value) {
+            $image = new Image;
+            $image->fill(
+                [
+                    'location_id'=>$id,
+                    'image_url'=>$value
+                ]);
+            $image->save();
+        }
+
+        $location = Location::find($id);
+        $location->title = $request->title;
+        $location->text = $request->text;
+        $location->marker = $request->marker;
+        $location->save();
+        return $location;
     }
 
     /**
@@ -87,5 +110,15 @@ class AdminController extends Controller
     public function destroy($id)
     {
         //
+    }
+    /**
+     * Storage new images
+     *
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function uploads(Request $request) {
+        $path = $request->file('image')->store('location_images','public');
+        return $path;
     }
 }

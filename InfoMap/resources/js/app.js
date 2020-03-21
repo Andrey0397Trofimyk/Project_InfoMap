@@ -9,9 +9,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 import * as VueGoogleMaps from 'vue2-google-maps';
-// import VueRouter from 'vue-router'
+import VueRouter from 'vue-router'
 
-// Vue.use(VueRouter)
+Vue.use(VueRouter)
 
 Vue.use(VueGoogleMaps, {
     load: {
@@ -40,25 +40,33 @@ Vue.component('list-component', require('./components/AdminListLocationComponent
 
 // import App from './components/AdminListLocationComponent.vue';
 
-// import Map from './components/AdminMapComponent.vue';
-// import Location from './components/AdminLocationComponent.vue'
+import Map from './components/AdminMapComponent.vue';
+import InfoLocation from './components/AdminLocationComponent.vue';
+import NewLocation from './components/AdminNewComponent.vue';
 
-// // Vue router
-// const router = new VueRouter({
-//     mode: 'history',
-//     routes: [
-//         {
-//             path: '/',
-//             name: 'map',
-//             component: Map
-//         },
-//         {
-//             path: '/location',
-//             name: 'location',
-//             component: Location,
-//         },
-//     ],
-// });
+// Vue router
+const router = new VueRouter({
+    mode: 'history',
+    routes: [
+        // {
+        //     path: '/admin/location',
+        //     name: 'map',
+        //     component: Map
+        // },
+        {
+            path: '/admin/location/:id',
+            name: 'location',
+            component: InfoLocation,
+            props:true
+        },
+        {
+            path: '/admin/location/create',
+            name: 'newLocation',
+            component: NewLocation,
+            props:true
+        },
+    ],
+});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -68,8 +76,8 @@ Vue.component('list-component', require('./components/AdminListLocationComponent
 const app = new Vue({
     el: '#warder',
     
-    // components: { Map,Location },
-    // router,
+    components: { Map,InfoLocation,NewLocation },
+    router,
 
     data() {
         return {
@@ -80,6 +88,7 @@ const app = new Vue({
             images:null,
             comments:null,
             actionForm:false,
+            newForm:false,
             locationId:999,
             locationMarker:null,
             locationNew:[],
@@ -87,6 +96,9 @@ const app = new Vue({
         }
     },
     methods: {
+        /**
+         * User page function
+         */
         insertPosition: function(e) {
             this.actionForm = false;
             
@@ -104,6 +116,7 @@ const app = new Vue({
         openForm:function(e) {
             this.mapPosition = e;
             this.actionForm = true;
+            this.newForm = false;
         },
         addNewLocation:function(e) {
             this.newMarker = false;
@@ -138,6 +151,21 @@ const app = new Vue({
         },
         removeMark:function() {
             this.newMarker = false;
+        },
+        createForm:function() {
+            alert('create');
+            this.newForm = true;
+            this.actionForm =false;
+        },
+        /**
+         *  Admin page function
+         */
+        openAdminForm:function() {
+            alert('app');
+            
+        },
+        Base:function() {
+            alert('app');
         }
     },
     watch: {
@@ -146,16 +174,13 @@ const app = new Vue({
         }
     }
 });
-// const app2 = new Vue({
-//     el:'#admin',
-//     data() {
-//         return{
-//             'data':'log'
-//         }
-//     }
-// });
+
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
+
+$('#treeview').click((e) => {
+    
+})

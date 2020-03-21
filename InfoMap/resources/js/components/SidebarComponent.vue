@@ -124,6 +124,7 @@
             'comments',
             'userId',
             'activForm',
+            'creatForm'
         ],
         data() {
             return {
@@ -143,7 +144,6 @@
                 markerPosition:null,
                 createquery:false,
                 insertquery:false,
-                // newform:false
             }
         },
         async beforeRouteEnter(to,from,next){
@@ -218,6 +218,7 @@
             },
             insertData: function(e) {
                 this.$emit('insertform');
+                alert();
                 this.createquery = false;
                 this.insertquery = true;
                 this.title = this.data.title;
@@ -341,10 +342,15 @@
                 }
             },
             activForm:function() {
-                this.createquery = true;
-                this.insertquery = false;
+                // this.createquery = true;
+                // this.insertquery = false;
                 this.markerPosition = this.marker;
                 this.actionForm = this.activForm;
+            },
+            creatForm:function() {
+                alert();
+                this.createquery = true;
+                this.insertquery = false;
             }
         }
     }

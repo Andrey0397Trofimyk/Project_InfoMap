@@ -47,6 +47,7 @@
 			createMarker(e){
 				$('.sidebar').removeClass('active');
 				this.accessCreate = true;
+				this.$emit('createform');
 				// this.newMarker = true;
 			},
 			// function map click

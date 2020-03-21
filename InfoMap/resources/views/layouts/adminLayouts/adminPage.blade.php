@@ -52,7 +52,6 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
           @csrf
         </form>
-        <!-- <i class='fas fa-sign-out-alt'></i> -->
       </li>
     </ul>
   </nav>
@@ -69,23 +68,30 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar Menu -->
-      <nav class="mt-2">
-		<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-			<!-- Add icons to the links using the .nav-icon class
-				with font-awesome or any other icon font library -->
-			<li class='nav-item'>
-				<a href="#" class="nav-link active">
-				<i class="nav-icon fas fa-atlas"></i>
-				<p>
-					Головна
-				</p>
-				</a>
-			</li>
-			<list-component
-			:locations ='{{$locations->get()}}'
-			></list-component>
-		</ul>
-      </nav>
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" id='treeview' data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
+                    with font-awesome or any other icon font library -->
+                <li class='nav-item'>
+                    <router-link 
+                    class='nav-link active' 
+                    @open='openAdminForm()' 
+                    @change-link='openAdminForm'
+                    :to="{ name: 'map' }">
+                        <i class="nav-icon fas fa-atlas"></i>   
+                        Головна
+                    </router-link>
+                </li>
+                <list-component
+                :locations ='{{$locations->select("id","marker","title")->get()}}'
+                ></list-component>
+                <li class='nav-item'>
+                    <router-link class='nav-link' :to="{ name: 'newLocation' }">
+                    <i class="nav-icon fas fa-plus-circle"></i>
+                    <p>Створити</p></router-link>                
+                </li>
+            </ul>
+        </nav>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
@@ -113,11 +119,11 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-12">
-					<!-- <gmap-component
+					<router-view
 					:info-location='{{$locations->get()}}'
-        			:user-id='{{Auth::user()->id}}'
-					></gmap-component>
-					<router-view></router-view> -->
+					:images ='{{$images->select("id","image_url","location_id")->get()}}'
+					:comments ='{{$comments->get()}}'>
+          </router-view>
 				</div>
 			</div>
 		</div>

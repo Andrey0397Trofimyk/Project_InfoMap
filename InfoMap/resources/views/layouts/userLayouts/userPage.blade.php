@@ -13,6 +13,7 @@
         @position='insertPosition($event)'
         @form='openForm($event)'
         @removemark = 'removeMark'
+        @createform  = 'createForm()'
         ></gmap-component>
     </div>
     <!-- Sidebar -->
@@ -23,6 +24,7 @@
         :user-id='{{Auth::user()->id}}'
         :images-url='images'
         :activ-form='actionForm'
+        :creat-form='newForm'
         :marker='mapPosition'
         @location='addNewLocation($event)'
         @removeloc='revLocation($event)'

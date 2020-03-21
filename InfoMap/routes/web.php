@@ -28,10 +28,18 @@ Route::group($goup,function(){
     /**
      * Admin route
      */
-    $methods_admin = ['index','edit','update','create','store','destroy'];
-    Route::resource('admin','AdminController')
+    $methods_admin = ['index','edit','show','update','create','store','destroy'];
+    Route::resource('admin/location','AdminController')
     ->only($methods_admin)
     ->names('admin');
+    Route::post('admin/upload','AdminController@uploads');
+    /**
+     * Route vue
+     * */ 
+    // Route::get('/admin/map','AdminController@index');
+    // Route::get('/admin/location','AdminController@show');
+    // Route::get('/admin/location/{id}', 'AdminController@show');
+    // Route::get('/admin/location','AdminController@index');
     /**
      * User route 
      * */ 
@@ -41,7 +49,6 @@ Route::group($goup,function(){
     ->names('user')
     ->middleware('userCheck');
     Route::post('/user/upload','UserController@uploads')->name('user.upload');
-    Route::post('/user/com','UserController@com');
 });
 
 
