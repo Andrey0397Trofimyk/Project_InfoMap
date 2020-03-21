@@ -1920,6 +1920,15 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
 //
 //
 //
@@ -1944,19 +1953,57 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['locations'],
+  props: ['locations', 'newLocation', 'newTitle' // 'locationInfo'
+  ],
   data: function data() {
-    return {};
+    return {
+      locationInfo: this.locations
+    };
   },
   methods: {
-    activeLink: function activeLink(e) {
-      $(e.target).parent().children().removeClass('active');
-      $(e.target).addClass('active');
-      this.$emit('open');
+    activeLink: function activeLink(e, id) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                $(e.target).parent().children().removeClass('active');
+                $(e.target).addClass('active');
+                _context.next = 4;
+                return _this.$emit('openlocation', id);
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    insertTitle: function insertTitle(e) {
+      alert('Success');
     }
   },
-  create: function create() {
-    this.$emit('change-link');
+  watch: {
+    // locations:function() {
+    //     alert();
+    //     this.locationInfo.push(this.locations);
+    // },
+    newLocation: function newLocation() {
+      this.locationInfo.push(this.newLocation);
+    },
+    newTitle: function newTitle() {
+      var _this2 = this;
+
+      this.locationInfo.forEach(function (element) {
+        if (element['id'] == _this2.newTitle.id) {
+          console.log(element['title'] + ' || ' + _this2.newTitle.title);
+          element['title'] = _this2.newTitle.title;
+        }
+      });
+    }
   }
 });
 
@@ -2058,10 +2105,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['infoLocation', 'images', 'comments'],
   data: function data() {
@@ -2071,7 +2114,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       commentsUser: [],
       removeImages: [],
       newImages: [],
-      idLoc: null,
       textarea: null,
       title: null,
       inputFiles: [],
@@ -2159,6 +2201,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.finish(20);
 
               case 28:
+                // console.log()
                 axios.put('/admin/location/' + _this.$route.params.id, {
                   title: _this.title,
                   text: _this.textarea,
@@ -2167,6 +2210,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   old_image_url: _this.removeImages
                 }).then(function (data) {
                   alert('success');
+                  console.log(data.data);
+                  vue.$emit('inserttitle', data.data);
                 });
 
               case 29:
@@ -2256,62 +2301,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   beforeRouteEnter: function beforeRouteEnter(to, from, next) {
     next(function (vm) {});
   },
-  beforeRouteUpdate: function beforeRouteUpdate(to, from, next) {
-    this.idLoc = to.params.id;
-    next();
-    this.locationUser = [];
+  watch: {
+    infoLocation: function infoLocation() {
+      $('.form-image').css('background-image', 'url("")');
+      this.locationUser = [];
+      this.locationUser.push(this.infoLocation);
+      this.title = this.infoLocation.title;
+      this.textarea = this.infoLocation.text;
+      this.center = JSON.parse(this.infoLocation.marker);
+    },
+    images: function images() {
+      this.imagesUser = [];
 
-    for (var index = 0; index < this.infoLocation.length; index++) {
-      if (this.infoLocation[index]['id'] == this.idLoc) {
-        this.locationUser.push(this.infoLocation[index]);
-        this.title = this.infoLocation[index].title;
-        this.textarea = this.infoLocation[index].text;
-        this.center = JSON.parse(this.infoLocation[index].marker);
-      }
-    }
-
-    this.imagesUser = [];
-
-    for (var _index = 0; _index < this.images.length; _index++) {
-      if (this.images[_index]['location_id'] == this.idLoc) {
-        this.imagesUser.push('/storage/' + this.images[_index]['image_url']);
-        $('.form-image').css('background-image', 'url("/storage/' + this.images[_index]['image_url'] + '")');
-      }
-    } // this.commentsUser = [];
-    // for (let index = 0; index <this.comments.length; index++) {
-    //     if(this.comments[index]['location_id'] == this.idLoc) {
-    //         this.commentsUser.push(this.comments[index]);
-    //     }
-    // }
-    // $('.form-image').css('backgro')
-
-  },
-  mounted: function mounted() {
-    this.locationUser = [];
-
-    for (var index = 0; index < this.infoLocation.length; index++) {
-      if (this.infoLocation[index]['id'] == this.$attrs.id) {
-        this.locationUser.push(this.infoLocation[index]);
-        this.title = this.infoLocation[index].title;
-        this.textarea = this.infoLocation[index].text;
-        this.center = JSON.parse(this.infoLocation[index].marker);
-      }
-    }
-
-    this.imagesUser = [];
-
-    for (var _index2 = 0; _index2 < this.images.length; _index2++) {
-      if (this.images[_index2]['location_id'] == this.$attrs.id) {
-        this.imagesUser.push('/storage/' + this.images[_index2]['image_url']);
-        $('.form-image').css('background-image', 'url("/storage/' + this.images[_index2]['image_url'] + '")');
-      }
-    }
-
-    this.commentsUser = [];
-
-    for (var _index3 = 0; _index3 < this.comments.length; _index3++) {
-      if (this.comments[_index3]['location_id'] == this.$attrs.id) {
-        this.commentsUser.push(this.comments[_index3]);
+      for (var index = 0; index < this.images.length; index++) {
+        this.imagesUser.push('/storage/' + this.images[index]['image_url']);
+        $('.form-image').css('background-image', 'url("/storage/' + this.images[index]['image_url'] + '")');
       }
     }
   }
@@ -2336,6 +2340,293 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Map"
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: [],
+  data: function data() {
+    return {
+      textarea: null,
+      title: null,
+      marker: null,
+      previewImages: [],
+      newImages: [],
+      center: {
+        lat: 51.1518032,
+        lng: 23.6378023
+      },
+      csrf: $('meta[name="csrf-token"]').attr('content'),
+      m: null
+    };
+  },
+  methods: {
+    seeImageForm: function seeImageForm(e) {
+      $('.form-image').css('background-image', 'url("' + e + '")');
+    },
+    createQuery: function createQuery() {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var vue, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, item;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                vue = _this;
+
+                if (!(_this.inputFiles != null)) {
+                  _context.next = 28;
+                  break;
+                }
+
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
+                _context.prev = 5;
+                _iterator = _this.inputFiles[Symbol.iterator]();
+
+              case 7:
+                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                  _context.next = 14;
+                  break;
+                }
+
+                item = _step.value;
+                _context.next = 11;
+                return _this.uploadsFile(item);
+
+              case 11:
+                _iteratorNormalCompletion = true;
+                _context.next = 7;
+                break;
+
+              case 14:
+                _context.next = 20;
+                break;
+
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](5);
+                _didIteratorError = true;
+                _iteratorError = _context.t0;
+
+              case 20:
+                _context.prev = 20;
+                _context.prev = 21;
+
+                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                  _iterator["return"]();
+                }
+
+              case 23:
+                _context.prev = 23;
+
+                if (!_didIteratorError) {
+                  _context.next = 26;
+                  break;
+                }
+
+                throw _iteratorError;
+
+              case 26:
+                return _context.finish(23);
+
+              case 27:
+                return _context.finish(20);
+
+              case 28:
+                console.log(JSON.stringify(_this.marker));
+                axios.post('/admin/location', {
+                  title: _this.title,
+                  text: _this.textarea,
+                  marker: JSON.stringify(_this.center),
+                  image_url: _this.newImages
+                }).then(function (data) {
+                  alert('success');
+                  vue.$emit('newlocation', data.data);
+                  router.push({
+                    path: '/admin/map'
+                  });
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 30:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[5, 16, 20, 28], [21,, 23, 27]]);
+      }))();
+    },
+    uploadsFile: function uploadsFile(item) {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var vue, form;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                vue = _this2;
+                form = new FormData();
+                form.append('image', item);
+                _context2.next = 5;
+                return axios.post('/user/upload', form).then(function (data) {
+                  vue.newImages.push(data.data);
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    previewFiles: function previewFiles(e) {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var file, i, f, reader, vue;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this3.inputFiles = Array.from(event.target.files);
+                file = e.target.files;
+
+                for (i = 0; f = file[i]; i++) {
+                  if (!f.type.match('image.*')) {
+                    alert("Image only please....");
+                  }
+
+                  reader = new FileReader();
+                  vue = _this3.previewImages;
+
+                  reader.onload = function (theFile) {
+                    return function (e) {
+                      vue.push(e.target.result);
+                    };
+                  }(f);
+
+                  reader.readAsDataURL(f);
+                }
+
+              case 3:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    addPosition: function addPosition(e) {
+      this.markers = [];
+      this.marker = e.latLng;
+      this.center = this.marker;
+      this.m = JSON.stringify(this.marker);
+    }
+  },
+  watch: {
+    previewImages: function previewImages(e) {
+      console.log(e);
+      $('.form-image').css('background-image', 'url("' + this.previewImages[0] + '")');
+    }
+  }
 });
 
 /***/ }),
@@ -2377,7 +2668,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "App",
+  // App
+  name: "Map",
   props: {
     infoLocation: null,
     userId: null,
@@ -2394,7 +2686,8 @@ __webpack_require__.r(__webpack_exports__);
       },
       markers: [],
       markerId: null,
-      accessCreate: false
+      accessCreate: false,
+      locations: []
     };
   },
   methods: {
@@ -2414,7 +2707,7 @@ __webpack_require__.r(__webpack_exports__);
         this.center = e.latLng;
         this.$emit('form', e.latLng);
         this.accessCreate = false;
-        $('.sidebar').addClass('active'); // this.newMarker = true;
+        $('.sidebar').addClass('active');
       } else {
         if (this.actionForm == true) {
           alert('Ви не зберегли зміни!!!');
@@ -2432,33 +2725,37 @@ __webpack_require__.r(__webpack_exports__);
         lat: e.lat,
         lng: e.lng
       };
+      console.log(this.newLocation.length);
       this.infoLocation.forEach(function (element) {
-        if (_this.newLocation.length == 0) {
-          if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
-            _this.markerId = element['id'];
+        if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
+          _this.markerId = element['id'];
 
-            _this.$emit('position', element['id']);
-          }
-        } else {
-          for (var index = 0; index < _this.newLocation.length; index++) {
-            if (element['marker'] == '{"lat":' + m_p.latLng.lat() + ',"lng":' + m_p.latLng.lng() + '}') {
-              _this.markerId = element['id'];
+          _this.$emit('position', element['id']);
+        } // if(this.newLocation.length == 0) {
+        // 	if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+        // 		this.markerId = element['id'];
+        // 		this.$emit('position',element['id']);
+        // 	}
+        // } else{
+        // 	for (let index = 0; index < this.newLocation.length; index++) {
+        // 		if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+        // 		this.markerId = element['id'];
+        // 		this.$emit('position',element['id']);
+        // 		}	
+        // 	}
+        // }
 
-              _this.$emit('position', element['id']);
-            }
-          }
-        }
       });
     }
   },
   watch: {
     // add new location to list
     newLocation: function newLocation() {
-      var _this2 = this;
+      this.locations.push(this.newLocation); // this.newLocation.forEach(element => {
+      // 	this.infoLocation.push(element);
+      // });
 
-      this.newLocation.forEach(function (element) {
-        _this2.infoLocation.push(element);
-      });
+      this.infoLocation.push(this.newLocation);
     },
     // drop marker
     deleteMarker: function deleteMarker() {
@@ -2479,10 +2776,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   // add marker to map
   mounted: function mounted() {
-    var _this3 = this;
+    var _this2 = this;
 
+    this.locations = [];
+    this.locations = this.infoLocation;
     this.infoLocation.forEach(function (element) {
-      _this3.markers.push({
+      _this2.markers.push({
         position: JSON.parse(element['marker'])
       });
     });
@@ -2629,7 +2928,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: ['data', 'marker', 'imagesUrl', 'comments', 'userId', 'activForm', 'creatForm'],
   data: function data() {
     return {
-      images: ['lubart_1.jpg'],
       file: null,
       title: null,
       textarea: null,
@@ -2673,10 +2971,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   methods: {
     seeImage: function seeImage(e) {
-      $('.sidebar-image').css('background-image',  true ? e['image_url'] : undefined);
+      $('.sidebar-image').css('background-image', 'url("storage/' + e['image_url'] + '")');
     },
     seeImageForm: function seeImageForm(e) {
-      console.log(e);
       $('.sidebar-image').css('background-image',  true ? e : undefined);
     },
     createQuery: function createQuery() {
@@ -2752,7 +3049,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context2.finish(20);
 
               case 28:
-                // alert();    
                 axios.post('/user', {
                   title: _this.title,
                   text: _this.textarea,
@@ -2843,7 +3139,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this4 = this;
 
       this.$emit('insertform');
-      alert();
+      alert('Insert');
       this.createquery = false;
       this.insertquery = true;
       this.title = this.data.title;
@@ -2933,7 +3229,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   image_url: _this5.newImages,
                   old_image_url: _this5.removeImages
                 }).then(function (data) {
-                  // alert('success');
+                  alert('success');
                   $('.sidebar').removeClass('active');
                   $('.sidebar-image').css('background-image', 'url("")');
                   vue.closeForm(); // vue.$emit('location',data.data);
@@ -2958,6 +3254,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }); // this.actionForm = false;
 
       this.$emit('actform', this.createquery);
+      this.inputFiles = [];
+      this.newImages = [];
       this.title = null;
       this.textarea = null;
       this.previewImages = [];
@@ -3009,13 +3307,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
     },
     activForm: function activForm() {
-      // this.createquery = true;
-      // this.insertquery = false;
       this.markerPosition = this.marker;
       this.actionForm = this.activForm;
     },
     creatForm: function creatForm() {
-      alert();
       this.createquery = true;
       this.insertquery = false;
     }
@@ -40084,7 +40379,7 @@ var render = function() {
     _c(
       "ul",
       { staticClass: "nav nav-treeview" },
-      _vm._l(_vm.locations, function(location, id) {
+      _vm._l(_vm.locationInfo, function(location, id) {
         return _c(
           "li",
           {
@@ -40092,7 +40387,7 @@ var render = function() {
             staticClass: "nav-item",
             on: {
               click: function($event) {
-                return _vm.activeLink($event)
+                return _vm.activeLink($event, location.id)
               }
             }
           },
@@ -40155,12 +40450,39 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "info" }, [
     _c("form", { attrs: { method: "POST", onsubmit: "return false;" } }, [
-      _c("input", {
-        attrs: { type: "hidden", id: "tit_loc", name: "_token" },
-        domProps: { value: _vm.csrf }
-      }),
-      _vm._v(" "),
-      _c("input", { attrs: { type: "hidden", name: "_method", value: "PUT" } }),
+      _c("div", { staticClass: "form-group mb-3 row" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-outline-primary insertQueryButton col-4",
+            attrs: { type: "submit" }
+          },
+          [_vm._v("Створити")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-outline-primary insertQueryButton col-4",
+            attrs: { type: "submit" },
+            on: {
+              click: function($event) {
+                return _vm.insertQuery()
+              }
+            }
+          },
+          [_vm._v("Змінити")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-outline-primary insertQueryButton col-4",
+            attrs: { type: "submit" }
+          },
+          [_vm._v("Видалити")]
+        )
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "form-group col-12 mb-0" }, [
         _c("div", { staticClass: "preview" }, [
@@ -40329,21 +40651,7 @@ var render = function() {
             }
           }
         })
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-outline-primary insertQueryButton",
-          attrs: { type: "submit" },
-          on: {
-            click: function($event) {
-              return _vm.insertQuery()
-            }
-          }
-        },
-        [_vm._v("Змінити")]
-      )
+      ])
     ])
   ])
 }
@@ -40399,6 +40707,240 @@ var render = function() {
   ])
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e&":
+/*!********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e& ***!
+  \********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "info" }, [
+    _c(
+      "form",
+      { attrs: { method: "POST", action: "new", onsubmit: "return false;" } },
+      [
+        _c("input", {
+          attrs: { type: "hidden", id: "tit_loc", name: "_token" },
+          domProps: { value: _vm.csrf }
+        }),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group col-12 mb-0" }, [
+          _c("div", { staticClass: "preview" }, [
+            _c("div", { staticClass: "form-image" }),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-map" },
+              [
+                _c(
+                  "GmapMap",
+                  {
+                    attrs: {
+                      center: _vm.center,
+                      zoom: 7,
+                      "map-type-id": "terrain"
+                    },
+                    on: {
+                      click: function($event) {
+                        return _vm.addPosition($event)
+                      }
+                    }
+                  },
+                  [
+                    _c("GmapMarker", {
+                      attrs: {
+                        position: _vm.marker,
+                        clickable: true,
+                        draggable: false,
+                        animation: 2
+                      }
+                    })
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "form-group col-12 mb-3",
+            staticStyle: { height: "auto" }
+          },
+          [
+            _c("div", { staticClass: "user-thumbnails" }, [
+              _vm.previewImages
+                ? _c(
+                    "ul",
+                    { staticClass: "thumbnails" },
+                    _vm._l(_vm.previewImages, function(image, id) {
+                      return _c(
+                        "li",
+                        {
+                          key: id,
+                          on: {
+                            click: function($event) {
+                              return _vm.seeImageForm(image)
+                            }
+                          }
+                        },
+                        [
+                          _c("img", {
+                            staticClass: "img-fluid img-thumbnail rounded",
+                            attrs: { src: image, alt: "" }
+                          })
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                : _vm._e()
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group mb-3" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "custom-file" }, [
+            _c("input", {
+              staticClass: "custom-file-input",
+              attrs: { type: "file", id: "inputGroupFile01", multiple: "" },
+              on: { change: _vm.previewFiles }
+            }),
+            _vm._v(" "),
+            _c(
+              "label",
+              {
+                staticClass: "custom-file-label",
+                attrs: { for: "inputGroupFile01" }
+              },
+              [_vm._v("Вибрати файл")]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group mb-3" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.title,
+                expression: "title"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              name: "title",
+              type: "text",
+              id: "basic-url",
+              "aria-describedby": "basic-addon3"
+            },
+            domProps: { value: _vm.title },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.title = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group mb-3" }, [
+          _vm._m(2),
+          _vm._v(" "),
+          _c("textarea", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.textarea,
+                expression: "textarea"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              name: "textarea",
+              "aria-label": "With textarea",
+              rows: "5"
+            },
+            domProps: { value: _vm.textarea },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.textarea = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-outline-primary insertQueryButton",
+            attrs: { type: "submit" },
+            on: {
+              click: function($event) {
+                return _vm.createQuery()
+              }
+            }
+          },
+          [_vm._v("Змінити")]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Завантаження")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Назва")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Текст")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -58589,12 +59131,11 @@ Vue.component('list-component', __webpack_require__(/*! ./components/AdminListLo
 
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   mode: 'history',
-  routes: [// {
-  //     path: '/admin/location',
-  //     name: 'map',
-  //     component: Map
-  // },
-  {
+  routes: [{
+    path: '/admin/map',
+    name: 'map',
+    component: _components_AdminMapComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+  }, {
     path: '/admin/location/:id',
     name: 'location',
     component: _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
@@ -58632,15 +59173,16 @@ var app = new Vue({
       newForm: false,
       locationId: 999,
       locationMarker: null,
-      locationNew: [],
-      newMarker: false
+      locationNew: {},
+      newMarker: false,
+      newTitle: {}
     };
   },
   methods: {
     /**
      * User page function
      */
-    insertPosition: function insertPosition(e) {
+    insertLocations: function insertLocations(e) {
       var _this = this;
 
       this.actionForm = false;
@@ -58659,9 +59201,12 @@ var app = new Vue({
       this.actionForm = true;
       this.newForm = false;
     },
+    // !!!
     addNewLocation: function addNewLocation(e) {
       this.newMarker = false;
-      this.locationNew.push(e);
+      this.locationNew = {}; // this.locationNew.push(e);
+
+      this.locationNew = e;
       $('.sidebar').removeClass('active');
     },
     task: function task() {},
@@ -58692,7 +59237,7 @@ var app = new Vue({
       this.newMarker = false;
     },
     createForm: function createForm() {
-      alert('create');
+      // alert('create');
       this.newForm = true;
       this.actionForm = false;
     },
@@ -58700,11 +59245,8 @@ var app = new Vue({
     /**
      *  Admin page function
      */
-    openAdminForm: function openAdminForm() {
-      alert('app');
-    },
-    Base: function Base() {
-      alert('app');
+    insertTitle: function insertTitle(e) {
+      this.newTitle = e;
     }
   },
   watch: {
@@ -58718,7 +59260,6 @@ $.ajaxSetup({
     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
   }
 });
-$('#treeview').click(function (e) {});
 
 /***/ }),
 
@@ -58983,17 +59524,20 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-var render, staticRenderFns
-var script = {}
+/* harmony import */ var _AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdminNewComponent.vue?vue&type=template&id=7efdd15e& */ "./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e&");
+/* harmony import */ var _AdminNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AdminNewComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
 
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__["default"])(
-  script,
-  render,
-  staticRenderFns,
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AdminNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -59001,8 +59545,42 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
   
 )
 
+/* hot reload */
+if (false) { var api; }
 component.options.__file = "resources/js/components/AdminNewComponent.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminNewComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminNewComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e&":
+/*!**************************************************************************************!*\
+  !*** ./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e& ***!
+  \**************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminNewComponent.vue?vue&type=template&id=7efdd15e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminNewComponent.vue?vue&type=template&id=7efdd15e&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminNewComponent_vue_vue_type_template_id_7efdd15e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 

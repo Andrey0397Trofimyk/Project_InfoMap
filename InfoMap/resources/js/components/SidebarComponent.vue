@@ -128,7 +128,6 @@
         ],
         data() {
             return {
-                images:['lubart_1.jpg'], 
                 file:null,
                 title:null,
                 textarea:null,
@@ -154,11 +153,10 @@
         },
         methods: {
             seeImage: function(e) {
-                $('.sidebar-image').css('background-image','url("storage/'+e['image_url']?e['image_url']:''+'")');
+                $('.sidebar-image').css('background-image','url("storage/'+e['image_url']+'")');
                 
             },
             seeImageForm: function(e) {
-                console.log(e);
                 $('.sidebar-image').css('background-image','url("'+e?e:''+'")');
             },
            async createQuery() {
@@ -170,7 +168,6 @@
                         await this.uploadsFile(item);
                     }
                 }
-                // alert();    
                 axios
                 .post('/user',{
                     title:this.title,
@@ -218,7 +215,7 @@
             },
             insertData: function(e) {
                 this.$emit('insertform');
-                alert();
+                alert('Insert');
                 this.createquery = false;
                 this.insertquery = true;
                 this.title = this.data.title;
@@ -230,8 +227,7 @@
                 this.actionForm = true;
             },
             async insertQuery(e) {
-                
-                
+  
                 let vue = this;
                 if(this.inputFiles != null) {
                     for( let item of this.inputFiles) {
@@ -246,7 +242,7 @@
                     old_image_url:this.removeImages
                 })
                 .then(function(data) {
-                    // alert('success');
+                    alert('success');
                     $('.sidebar').removeClass('active');
                     $('.sidebar-image').css('background-image','url("")');
                     vue.closeForm();
@@ -264,6 +260,8 @@
 
                 // this.actionForm = false;
                 this.$emit('actform',this.createquery);
+                this.inputFiles = [];
+                this.newImages = [];
                 this.title = null;
                 this.textarea = null;
                 this.previewImages = [];
@@ -342,14 +340,11 @@
                 }
             },
             activForm:function() {
-                // this.createquery = true;
-                // this.insertquery = false;
                 this.markerPosition = this.marker;
                 this.actionForm = this.activForm;
             },
             creatForm:function() {
-                alert();
-                this.createquery = true;
+                 this.createquery = true;
                 this.insertquery = false;
             }
         }

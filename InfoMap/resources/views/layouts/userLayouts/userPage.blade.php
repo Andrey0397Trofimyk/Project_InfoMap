@@ -10,7 +10,7 @@
         :delete-marker='locationMarker'
         :action-form='actionForm'
         :new-marker='newMarker'
-        @position='insertPosition($event)'
+        @position='insertLocations($event)'
         @form='openForm($event)'
         @removemark = 'removeMark'
         @createform  = 'createForm()'

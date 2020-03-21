@@ -60,7 +60,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="#" class="brand-link">
       <img src="/js/adminPlugins/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light">Admin Page</span>
@@ -73,22 +73,30 @@
                 <!-- Add icons to the links using the .nav-icon class
                     with font-awesome or any other icon font library -->
                 <li class='nav-item'>
+                    <!-- <a href="#" class="nav-icon active">
+                        <i class="nav-icon fas fa-atlas"></i>   
+                            Головна
+                    </a> -->
                     <router-link 
                     class='nav-link active' 
-                    @open='openAdminForm()' 
-                    @change-link='openAdminForm'
                     :to="{ name: 'map' }">
                         <i class="nav-icon fas fa-atlas"></i>   
                         Головна
-                    </router-link>
+                    </router-link >
                 </li>
                 <list-component
                 :locations ='{{$locations->select("id","marker","title")->get()}}'
+                :new-location = 'locationNew'
+                :new-title = 'newTitle'
+                @openlocation='insertLocations'
+                
                 ></list-component>
+                <!-- :location-info='locationInfo' -->
                 <li class='nav-item'>
                     <router-link class='nav-link' :to="{ name: 'newLocation' }">
-                    <i class="nav-icon fas fa-plus-circle"></i>
-                    <p>Створити</p></router-link>                
+                        <i class="nav-icon fas fa-plus-circle"></i>
+                        <p>Створити</p>
+                    </router-link>                
                 </li>
             </ul>
         </nav>
@@ -120,10 +128,13 @@
 			<div class="row">
 				<div class="col-12">
 					<router-view
-					:info-location='{{$locations->get()}}'
-					:images ='{{$images->select("id","image_url","location_id")->get()}}'
-					:comments ='{{$comments->get()}}'>
-          </router-view>
+					:info-location='locationInfo'
+					:images ='images'
+					:comments ='comments'
+                    @newlocation = 'addNewLocation($event)'
+                    @inserttitle = 'insertTitle'
+                    >
+                </router-view>
 				</div>
 			</div>
 		</div>

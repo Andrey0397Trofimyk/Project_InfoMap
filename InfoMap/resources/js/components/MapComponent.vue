@@ -27,7 +27,8 @@
 </template>
 <script>
 	export default {
-		name: "App",
+		// App
+		name: "Map",
 		props:{
 		infoLocation:null,
 		userId:null,
@@ -41,6 +42,7 @@
 		markers: [],
 		markerId: null,
 		accessCreate: false,
+		locations:[]
 		}),
 		methods: {
 			// freate marker
@@ -61,7 +63,6 @@
 					this.$emit('form',e.latLng);
 					this.accessCreate = false;
 					$('.sidebar').addClass('active');
-					// this.newMarker = true;
 				}else {
 					if(this.actionForm == true) {
 						alert('Ви не зберегли зміни!!!');
@@ -77,29 +78,42 @@
 					lat: e.lat ,
 					lng: e.lng 
 				}
+				console.log(this.newLocation.length);
 				this.infoLocation.forEach(element => {
-					if(this.newLocation.length == 0) {
+					
 						if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
 							this.markerId = element['id'];
 							this.$emit('position',element['id']);
 						}
-					} else{
-						for (let index = 0; index < this.newLocation.length; index++) {
-							if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
-							this.markerId = element['id'];
-							this.$emit('position',element['id']);
-							}	
-						}
-					}
+
+
+					// if(this.newLocation.length == 0) {
+						
+					// 	if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+					// 		this.markerId = element['id'];
+					// 		this.$emit('position',element['id']);
+					// 	}
+					// } else{
+						
+					// 	for (let index = 0; index < this.newLocation.length; index++) {
+					// 		if(element['marker'] == '{"lat":'+m_p.latLng.lat()+',"lng":'+m_p.latLng.lng()+'}') {
+					// 		this.markerId = element['id'];
+					// 		this.$emit('position',element['id']);
+					// 		}	
+					// 	}
+					// }
 				})
+
 			}
 		},
 		watch:{
 			// add new location to list
 			newLocation:function() {
-				this.newLocation.forEach(element => {
-					this.infoLocation.push(element);
-				});
+				this.locations.push(this.newLocation);
+				// this.newLocation.forEach(element => {
+				// 	this.infoLocation.push(element);
+				// });
+				this.infoLocation.push(this.newLocation);
 			},
 			// drop marker
 			deleteMarker: function() {
@@ -120,6 +134,8 @@
 		},
 		// add marker to map
 		mounted() {
+			this.locations = [];
+			this.locations = this.infoLocation;
 			this.infoLocation.forEach((element) => {
 				this.markers.push({
 					position: JSON.parse(element['marker'])

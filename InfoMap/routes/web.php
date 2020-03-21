@@ -32,7 +32,9 @@ Route::group($goup,function(){
     Route::resource('admin/location','AdminController')
     ->only($methods_admin)
     ->names('admin');
+    Route::get('admin/map','AdminController@index');
     Route::post('admin/upload','AdminController@uploads');
+    Route::post('admin/location/new','AdminController@store');
     /**
      * Route vue
      * */ 

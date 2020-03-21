@@ -48,11 +48,11 @@ import NewLocation from './components/AdminNewComponent.vue';
 const router = new VueRouter({
     mode: 'history',
     routes: [
-        // {
-        //     path: '/admin/location',
-        //     name: 'map',
-        //     component: Map
-        // },
+        {
+            path: '/admin/map',
+            name: 'map',
+            component: Map
+        },
         {
             path: '/admin/location/:id',
             name: 'location',
@@ -91,17 +91,17 @@ const app = new Vue({
             newForm:false,
             locationId:999,
             locationMarker:null,
-            locationNew:[],
+            locationNew:{},
             newMarker:false,
+            newTitle:{}
         }
     },
     methods: {
         /**
          * User page function
          */
-        insertPosition: function(e) {
+        insertLocations: function(e) {
             this.actionForm = false;
-            
             axios
             .get('/images/'+e)
             .then(data => (this.images = data['data']));
@@ -118,9 +118,12 @@ const app = new Vue({
             this.actionForm = true;
             this.newForm = false;
         },
+        // !!!
         addNewLocation:function(e) {
             this.newMarker = false;
-            this.locationNew.push(e);
+            this.locationNew = {};
+            // this.locationNew.push(e);
+            this.locationNew = e;
             $('.sidebar').removeClass('active');
         },
         task:function() {
@@ -153,19 +156,15 @@ const app = new Vue({
             this.newMarker = false;
         },
         createForm:function() {
-            alert('create');
+            // alert('create');
             this.newForm = true;
             this.actionForm =false;
         },
         /**
          *  Admin page function
          */
-        openAdminForm:function() {
-            alert('app');
-            
-        },
-        Base:function() {
-            alert('app');
+        insertTitle: function(e) {
+            this.newTitle = e;
         }
     },
     watch: {
@@ -181,6 +180,3 @@ $.ajaxSetup({
     }
 });
 
-$('#treeview').click((e) => {
-    
-})

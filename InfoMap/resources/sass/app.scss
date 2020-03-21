@@ -8,10 +8,10 @@
 @import '~bootstrap/scss/bootstrap';
 
 // Font Awesome
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/brands';
+// @import '~@fortawesome/fontawesome-free/scss/fontawesome';
+// @import '~@fortawesome/fontawesome-free/scss/regular';
+// @import '~@fortawesome/fontawesome-free/scss/solid';
+// @import '~@fortawesome/fontawesome-free/scss/brands';
 
 $color-1:#fff;
 // height page
@@ -147,11 +147,9 @@ body{
             background-position: center;
             background-size: cover;
             .insertLocation {
-                // border: 1px solid black;
                 background: #d1d1d4;
                 padding: 5px;
                 border-radius: 0 0 0 5px;
-                // transition: .5s;
                 i{
                     padding: 5px;
                     color: #000000;
@@ -170,7 +168,8 @@ body{
             width: 100%;
             overflow: auto;
             padding:10px;
-            height: 125px;
+            // height: 125px;
+            height: auto;
             transition: .3s;
 
             .thumbnails {

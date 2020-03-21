@@ -1,6 +1,9 @@
 <?php
 
+
 namespace App\Http\Controllers\LocationMap;
+
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
@@ -41,7 +44,29 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
+        $location = new Location;
+
+        $location->fill([
+            'user_id'=>Auth::id(),
+            'title'=>$request->title,
+            'text'=>$request->text,
+            'marker'=>$request->marker
+        ]);
+        $location->save();
+
         
+
+        foreach ($request->image_url as $key => $value) {
+            $image = new Image;
+            $image->fill(
+                [
+                    'location_id'=>$location->id,
+                    'image_url'=>$value
+                ]
+            );
+            $image->save();
+        }
+        return $location;
     }
 
     /**
@@ -64,7 +89,7 @@ class AdminController extends Controller
      */
     public function edit($id)
     {
-        //
+        return redirect()->route('admin.index');
     }
 
     /**
@@ -99,6 +124,7 @@ class AdminController extends Controller
         $location->marker = $request->marker;
         $location->save();
         return $location;
+        // return 1;
     }
 
     /**

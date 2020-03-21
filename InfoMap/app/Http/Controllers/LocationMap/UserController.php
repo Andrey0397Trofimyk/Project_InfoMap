@@ -43,7 +43,7 @@ class UserController extends Controller
                 'user_id'=>Auth::id(),
                 'title'=>$request->title,
                 'text'=>$request->text,
-                // 'marker'=>$request->marker
+                'marker'=>$request->marker
             ]);
             $location->save();
     
