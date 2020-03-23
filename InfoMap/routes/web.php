@@ -32,7 +32,8 @@ Route::group($goup,function(){
     Route::resource('admin/location','AdminController')
     ->only($methods_admin)
     ->names('admin');
-    Route::get('admin/map','AdminController@index');
+    Route::get('admin/map','AdminController@index')->name('admin.map');
+    Route::get('/admin/location/map','AdminController@index')->name('admin.map2');
     Route::post('admin/upload','AdminController@uploads');
     Route::post('admin/location/new','AdminController@store');
     /**
@@ -60,6 +61,9 @@ Route::group($goup,function(){
  */
 Route::get('/location/{id}',function($id){
     return Location::where('id',$id)->first();
+});
+Route::get('/locations/markers',function(){
+    return Location::select("id","marker")->get();
 });
 Route::get('/images/{location_id}',function($location_id){
     return Image::where('location_id',$location_id)->select('image_url')->get();

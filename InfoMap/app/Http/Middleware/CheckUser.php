@@ -17,7 +17,8 @@ class CheckUser
     {
         if(Auth::user() and Auth::user()->is_admin == 1)
         {
-            return redirect()->route('admin.index');
+            // return redirect()->route('admin.index');
+            return redirect()->route('admin.map');
 
         }else if(Auth::user() and Auth::user()->is_admin == 0){
             return $next($request);

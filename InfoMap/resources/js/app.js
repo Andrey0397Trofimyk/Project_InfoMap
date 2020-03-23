@@ -11,7 +11,7 @@ window.Vue = require('vue');
 import * as VueGoogleMaps from 'vue2-google-maps';
 import VueRouter from 'vue-router'
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 Vue.use(VueGoogleMaps, {
     load: {
@@ -64,7 +64,7 @@ const router = new VueRouter({
             name: 'newLocation',
             component: NewLocation,
             props:true
-        },
+        }
     ],
 });
 
@@ -93,7 +93,8 @@ const app = new Vue({
             locationMarker:null,
             locationNew:{},
             newMarker:false,
-            newTitle:{}
+            updateTitle:{},
+            newTitle:{},
         }
     },
     methods: {
@@ -123,6 +124,8 @@ const app = new Vue({
             this.newMarker = false;
             this.locationNew = {};
             // this.locationNew.push(e);
+            this.newTitle = e;
+
             this.locationNew = e;
             $('.sidebar').removeClass('active');
         },
@@ -140,7 +143,9 @@ const app = new Vue({
             });
             this.locationMarker = this.locationInfo.marker;
         },
-        revLocation: function(e) {
+        removeLocation: function(e) {
+            alert('remove app');
+            console.log(e);
             this.locationId = e;
         },
         insertForm: function(){
@@ -156,15 +161,14 @@ const app = new Vue({
             this.newMarker = false;
         },
         createForm:function() {
-            // alert('create');
             this.newForm = true;
             this.actionForm =false;
         },
         /**
          *  Admin page function
          */
-        insertTitle: function(e) {
-            this.newTitle = e;
+        updateLocation: function(e) {
+            this.updateTitle = e;
         }
     },
     watch: {

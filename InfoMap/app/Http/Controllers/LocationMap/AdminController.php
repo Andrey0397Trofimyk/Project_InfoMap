@@ -23,6 +23,7 @@ class AdminController extends Controller
         $comments = new Comment;
         $images = new Image;
 
+        // return view('layouts.adminLayouts.adminPage',compact('locations','comments','images'));
         return view('layouts.adminLayouts.adminPage',compact('locations','comments','images'));
     }
 
@@ -33,7 +34,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.map');
     }
 
     /**
@@ -78,7 +79,7 @@ class AdminController extends Controller
     public function show($id)
     {
         //
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.map');
     }
 
     /**
@@ -89,7 +90,7 @@ class AdminController extends Controller
      */
     public function edit($id)
     {
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.map');
     }
 
     /**
@@ -135,7 +136,7 @@ class AdminController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Location::destroy($id);
     }
     /**
      * Storage new images

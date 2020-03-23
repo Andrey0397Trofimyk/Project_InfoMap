@@ -27,7 +27,7 @@
         :creat-form='newForm'
         :marker='mapPosition'
         @location='addNewLocation($event)'
-        @removeloc='revLocation($event)'
+        @removeloc='removeLocation($event)'
         @actform = 'actForm($event)'
         @insertform = 'insertForm'
         >

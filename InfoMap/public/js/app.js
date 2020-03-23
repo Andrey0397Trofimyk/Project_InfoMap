@@ -1953,8 +1953,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['locations', 'newLocation', 'newTitle' // 'locationInfo'
-  ],
+  props: ['locations', 'newLocation', 'newTitle', 'updateTitle', 'removeLocation'],
   data: function data() {
     return {
       locationInfo: this.locations
@@ -1987,22 +1986,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   watch: {
-    // locations:function() {
-    //     alert();
-    //     this.locationInfo.push(this.locations);
+    // newLocation:function() {
+    //     this.locationInfo.push(this.newLocation);
     // },
-    newLocation: function newLocation() {
-      this.locationInfo.push(this.newLocation);
-    },
-    newTitle: function newTitle() {
+    updateTitle: function updateTitle() {
       var _this2 = this;
 
+      alert('update title');
       this.locationInfo.forEach(function (element) {
-        if (element['id'] == _this2.newTitle.id) {
-          console.log(element['title'] + ' || ' + _this2.newTitle.title);
-          element['title'] = _this2.newTitle.title;
+        if (element['id'] == _this2.updateTitle.id) {
+          element['title'] = _this2.updateTitle.title;
         }
       });
+    },
+    newTitle: function newTitle() {
+      alert('new title');
+      this.locationInfo.push(this.newTitle);
+    },
+    removeLocation: function removeLocation(e) {
+      alert('remove title');
+
+      for (var index = 0; index < this.locationInfo.length; index++) {
+        if (this.locationInfo[index].id == e) {
+          this.locationInfo.splice(index, 1);
+        }
+      }
     }
   }
 });
@@ -2105,8 +2113,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['infoLocation', 'images', 'comments'],
+  props: ['infoLocation', 'images', 'comments', 'newMarker'],
   data: function data() {
     return {
       locationUser: [],
@@ -2114,6 +2152,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       commentsUser: [],
       removeImages: [],
       newImages: [],
+      idLocation: null,
       textarea: null,
       title: null,
       inputFiles: [],
@@ -2128,7 +2167,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     seeImageForm: function seeImageForm(e) {
       $('.form-image').css('background-image', 'url("' + e + '")');
     },
-    insertQuery: function insertQuery() {
+    updateQuery: function updateQuery() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
@@ -2201,7 +2240,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.finish(20);
 
               case 28:
-                // console.log()
                 axios.put('/admin/location/' + _this.$route.params.id, {
                   title: _this.title,
                   text: _this.textarea,
@@ -2209,9 +2247,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   image_url: _this.newImages,
                   old_image_url: _this.removeImages
                 }).then(function (data) {
-                  alert('success');
-                  console.log(data.data);
-                  vue.$emit('inserttitle', data.data);
+                  alert('Update');
+                  vue.$emit('updatelocation', data.data);
+                  vue.$router.push({
+                    name: 'map'
+                  });
                 });
 
               case 29:
@@ -2221,6 +2261,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee, null, [[5, 16, 20, 28], [21,, 23, 27]]);
       }))();
+    },
+    removeQuery: function removeQuery(e) {
+      alert('remove bas');
+      var vue = this;
+      axios["delete"]('/admin/location/' + e).then(function (data) {
+        vue.$emit('removeloc', e);
+        vue.$router.push({
+          name: 'map'
+        });
+      });
+    },
+    createQuery: function createQuery() {
+      this.$router.push({
+        name: 'newLocation'
+      });
     },
     InsertPosition: function InsertPosition(e) {
       this.center = e.latLng;
@@ -2303,11 +2358,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   watch: {
     infoLocation: function infoLocation() {
-      $('.form-image').css('background-image', 'url("")');
+      // $('.form-image').css('background-image','url("")');
       this.locationUser = [];
       this.locationUser.push(this.infoLocation);
       this.title = this.infoLocation.title;
       this.textarea = this.infoLocation.text;
+      this.idLocation = this.infoLocation.id;
       this.center = JSON.parse(this.infoLocation.marker);
     },
     images: function images() {
@@ -2338,8 +2394,131 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "Map"
+  name: "App",
+  props: [],
+  data: function data() {
+    return {
+      center: {
+        lat: 51.1518032,
+        lng: 23.6378023
+      },
+      csrf: $('meta[name="csrf-token"]').attr('content'),
+      markers: []
+    };
+  },
+  methods: {
+    seeLocation: function seeLocation(e) {
+      this.$emit('openlocation', e);
+      this.$router.push({
+        name: 'location',
+        params: {
+          id: e
+        }
+      });
+    }
+  },
+  watch: {
+    '$route.params': {
+      handler: function handler(search) {
+        var _this = this;
+
+        axios.get('/locations/markers').then(function (data) {
+          _this.markers = data['data'];
+        });
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  mounted: function mounted() {// this.baseMarkers.forEach(element => {
+    // 	this.markers.push(element);
+    // });
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['bot'],
+  data: function data() {
+    return {
+      bots: null
+    };
+  },
+  methods: {
+    news: function news() {
+      this.bots = 1;
+    }
+  },
+  watch: {
+    $route: function $route(to, from) {
+      alert(to);
+      console.log(to);
+    },
+    '$route.params': {
+      handler: function handler(search) {
+        alert('map');
+        console.log(search);
+        console.log(this.bot);
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  beforeRouteUpdate: function beforeRouteUpdate(to, from, next) {
+    alert('roy');
+    console.log(to); // react to route changes...
+    // don't forget to call next()
+  }
 });
 
 /***/ }),
@@ -2361,6 +2540,36 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2526,7 +2735,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.finish(20);
 
               case 28:
-                console.log(JSON.stringify(_this.marker));
                 axios.post('/admin/location', {
                   title: _this.title,
                   text: _this.textarea,
@@ -2535,14 +2743,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (data) {
                   alert('success');
                   vue.$emit('newlocation', data.data);
-                  router.push({
-                    path: '/admin/map'
+                  this.$router.push({
+                    name: 'map'
                   });
                 })["catch"](function (error) {
                   console.log(error);
                 });
 
-              case 30:
+              case 29:
               case "end":
                 return _context.stop();
             }
@@ -7882,6 +8090,25 @@ exports = module.exports = __webpack_require__(/*! ../../../css-loader/lib/css-b
 
 // module
 exports.push([module.i, "\n.vue-street-view-pano-container {\n  position: relative;\n}\n.vue-street-view-pano-container .vue-street-view-pano {\n  left: 0; right: 0; top: 0; bottom: 0;\n  position: absolute;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--7-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.fullMap{\n\theight: 300px;\n}\n.vue-map-container{\n\theight: inherit;\n}\n", ""]);
 
 // exports
 
@@ -39524,6 +39751,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--7-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--7-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminMapComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/lib/addStyles.js":
 /*!****************************************************!*\
   !*** ./node_modules/style-loader/lib/addStyles.js ***!
@@ -40448,209 +40705,278 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "info" }, [
-    _c("form", { attrs: { method: "POST", onsubmit: "return false;" } }, [
-      _c("div", { staticClass: "form-group mb-3 row" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-primary insertQueryButton col-4",
-            attrs: { type: "submit" }
-          },
-          [_vm._v("Створити")]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-primary insertQueryButton col-4",
-            attrs: { type: "submit" },
-            on: {
-              click: function($event) {
-                return _vm.insertQuery()
-              }
-            }
-          },
-          [_vm._v("Змінити")]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-primary insertQueryButton col-4",
-            attrs: { type: "submit" }
-          },
-          [_vm._v("Видалити")]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group col-12 mb-0" }, [
-        _c("div", { staticClass: "preview" }, [
-          _c("div", { staticClass: "form-image" }),
+  return _c("div", { staticClass: "content-wrapper" }, [
+    _c("div", { staticClass: "content-header" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row mb-2" }, [
+          _c("div", { staticClass: "col-sm-6" }, [
+            _c("h4", { staticClass: "m-0 text-dark" }, [
+              _vm._v("Локація - " + _vm._s(_vm.title))
+            ])
+          ]),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "form-map" },
-            [
+          _c("div", { staticClass: "col-sm-6" }, [
+            _c("ol", { staticClass: "breadcrumb float-sm-right" }, [
               _c(
-                "GmapMap",
-                {
-                  attrs: {
-                    center: _vm.center,
-                    zoom: 7,
-                    "map-type-id": "terrain"
-                  },
-                  on: {
-                    click: function($event) {
-                      return _vm.InsertPosition($event)
-                    }
-                  }
-                },
+                "li",
+                { staticClass: "breadcrumb-item" },
                 [
-                  _c("GmapMarker", {
-                    attrs: {
-                      position: _vm.center,
-                      clickable: true,
-                      draggable: false,
-                      animation: 2
-                    }
-                  })
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "nav-link active",
+                      attrs: { to: { name: "map" } }
+                    },
+                    [
+                      _vm._v(
+                        "   \r\n                        Головна\r\n                    "
+                      )
+                    ]
+                  )
                 ],
                 1
               )
-            ],
-            1
-          )
+            ])
+          ])
         ])
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "form-group col-12 mb-0",
-          staticStyle: { height: "auto" }
-        },
-        [
-          _c("div", { staticClass: "user-thumbnails" }, [
-            _vm.imagesUser
-              ? _c(
-                  "ul",
-                  { staticClass: "thumbnails" },
-                  _vm._l(_vm.imagesUser, function(image, id) {
-                    return _c(
-                      "li",
+      ])
+    ]),
+    _vm._v(" "),
+    _c("section", { staticClass: "content" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-12" }, [
+            _c("div", { staticClass: "info" }, [
+              _c(
+                "form",
+                { attrs: { method: "POST", onsubmit: "return false;" } },
+                [
+                  _c("div", { staticClass: "form-group text-center" }, [
+                    _c(
+                      "button",
                       {
-                        key: id,
+                        staticClass: "btn btn-outline-success",
+                        attrs: { type: "submit" },
                         on: {
                           click: function($event) {
-                            return _vm.seeImageForm(image)
+                            return _vm.createQuery()
                           }
                         }
                       },
-                      [
-                        _c("img", {
-                          staticClass: "img-fluid img-thumbnail rounded",
-                          attrs: { src: image, alt: "" }
-                        }),
-                        _vm._v(" "),
-                        _c("i", {
-                          staticClass: "fas fa-times deleteImg",
-                          on: {
-                            click: function($event) {
-                              return _vm.removeImage(image)
-                            }
+                      [_vm._v("Створити")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-outline-warning",
+                        attrs: { type: "submit" },
+                        on: {
+                          click: function($event) {
+                            return _vm.updateQuery()
                           }
-                        })
-                      ]
+                        }
+                      },
+                      [_vm._v("Змінити")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-outline-danger",
+                        attrs: { type: "submit" },
+                        on: {
+                          click: function($event) {
+                            return _vm.removeQuery(_vm.idLocation)
+                          }
+                        }
+                      },
+                      [_vm._v("Видалити")]
                     )
-                  }),
-                  0
-                )
-              : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group col-12 mb-0" }, [
+                    _c("div", { staticClass: "preview" }, [
+                      _c("div", { staticClass: "form-image" }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-map" },
+                        [
+                          _c(
+                            "GmapMap",
+                            {
+                              attrs: {
+                                center: _vm.center,
+                                zoom: 7,
+                                "map-type-id": "terrain"
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.InsertPosition($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("GmapMarker", {
+                                attrs: {
+                                  position: _vm.center,
+                                  clickable: true,
+                                  draggable: false,
+                                  animation: 2
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "form-group col-12 mb-0",
+                      staticStyle: { height: "auto" }
+                    },
+                    [
+                      _c("div", { staticClass: "user-thumbnails" }, [
+                        _vm.imagesUser
+                          ? _c(
+                              "ul",
+                              { staticClass: "thumbnails" },
+                              _vm._l(_vm.imagesUser, function(image, id) {
+                                return _c(
+                                  "li",
+                                  {
+                                    key: id,
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.seeImageForm(image)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("img", {
+                                      staticClass:
+                                        "img-fluid img-thumbnail rounded",
+                                      attrs: { src: image, alt: "" }
+                                    }),
+                                    _vm._v(" "),
+                                    _c("i", {
+                                      staticClass: "fas fa-times deleteImg",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.removeImage(image)
+                                        }
+                                      }
+                                    })
+                                  ]
+                                )
+                              }),
+                              0
+                            )
+                          : _vm._e()
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "custom-file" }, [
+                      _c("input", {
+                        staticClass: "custom-file-input",
+                        attrs: {
+                          type: "file",
+                          id: "inputGroupFile01",
+                          multiple: ""
+                        },
+                        on: {
+                          change: function($event) {
+                            return _vm.newFileImages($event)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "custom-file-label",
+                          attrs: { for: "inputGroupFile01" }
+                        },
+                        [_vm._v("Вибрати файл")]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.title,
+                          expression: "title"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        name: "title",
+                        type: "text",
+                        id: "basic-url",
+                        "aria-describedby": "basic-addon3"
+                      },
+                      domProps: { value: _vm.title },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.title = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(2),
+                    _vm._v(" "),
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.textarea,
+                          expression: "textarea"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        name: "textarea",
+                        "aria-label": "With textarea",
+                        rows: "5"
+                      },
+                      domProps: { value: _vm.textarea },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.textarea = $event.target.value
+                        }
+                      }
+                    })
+                  ])
+                ]
+              )
+            ])
           ])
-        ]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group mb-3" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "custom-file" }, [
-          _c("input", {
-            staticClass: "custom-file-input",
-            attrs: { type: "file", id: "inputGroupFile01", multiple: "" },
-            on: {
-              change: function($event) {
-                return _vm.newFileImages($event)
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "label",
-            {
-              staticClass: "custom-file-label",
-              attrs: { for: "inputGroupFile01" }
-            },
-            [_vm._v("Вибрати файл")]
-          )
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group mb-3" }, [
-        _vm._m(1),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.title,
-              expression: "title"
-            }
-          ],
-          staticClass: "form-control",
-          attrs: {
-            name: "title",
-            type: "text",
-            id: "basic-url",
-            "aria-describedby": "basic-addon3"
-          },
-          domProps: { value: _vm.title },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.title = $event.target.value
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group mb-3" }, [
-        _vm._m(2),
-        _vm._v(" "),
-        _c("textarea", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.textarea,
-              expression: "textarea"
-            }
-          ],
-          staticClass: "form-control",
-          attrs: { name: "textarea", "aria-label": "With textarea", rows: "5" },
-          domProps: { value: _vm.textarea },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.textarea = $event.target.value
-            }
-          }
-        })
       ])
     ])
   ])
@@ -40702,8 +41028,93 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "app" }, [
-    _vm._v("\r\n    Hello world!!!\r\n")
+  return _c("div", { staticClass: "content-wrapper" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("section", { staticClass: "content" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-12" }, [
+            _c(
+              "div",
+              { staticClass: "container fullMap" },
+              [
+                _c(
+                  "GmapMap",
+                  {
+                    attrs: {
+                      center: _vm.center,
+                      zoom: 7,
+                      "map-type-id": "terrain"
+                    }
+                  },
+                  _vm._l(_vm.markers, function(marker, id) {
+                    return _c("GmapMarker", {
+                      key: id,
+                      attrs: {
+                        position: JSON.parse(marker.marker),
+                        clickable: true,
+                        draggable: false,
+                        animation: 2
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.seeLocation(marker.id)
+                        }
+                      }
+                    })
+                  }),
+                  1
+                )
+              ],
+              1
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "content-header" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row mb-2" }, [
+          _c("div", { staticClass: "col-sm-6" }, [
+            _c("h1", { staticClass: "m-0 text-dark" }, [_vm._v("Карта")])
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _vm._v("\n    hello wolrld " + _vm._s(_vm.bot) + "\n    "),
+    _c("button", { on: { click: _vm.news } }, [_vm._v("ciucbiqw")])
   ])
 }
 var staticRenderFns = []
@@ -40728,194 +41139,257 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "info" }, [
-    _c(
-      "form",
-      { attrs: { method: "POST", action: "new", onsubmit: "return false;" } },
-      [
-        _c("input", {
-          attrs: { type: "hidden", id: "tit_loc", name: "_token" },
-          domProps: { value: _vm.csrf }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group col-12 mb-0" }, [
-          _c("div", { staticClass: "preview" }, [
-            _c("div", { staticClass: "form-image" }),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "form-map" },
-              [
-                _c(
-                  "GmapMap",
-                  {
-                    attrs: {
-                      center: _vm.center,
-                      zoom: 7,
-                      "map-type-id": "terrain"
-                    },
-                    on: {
-                      click: function($event) {
-                        return _vm.addPosition($event)
-                      }
-                    }
-                  },
-                  [
-                    _c("GmapMarker", {
-                      attrs: {
-                        position: _vm.marker,
-                        clickable: true,
-                        draggable: false,
-                        animation: 2
-                      }
-                    })
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "form-group col-12 mb-3",
-            staticStyle: { height: "auto" }
-          },
-          [
-            _c("div", { staticClass: "user-thumbnails" }, [
-              _vm.previewImages
-                ? _c(
-                    "ul",
-                    { staticClass: "thumbnails" },
-                    _vm._l(_vm.previewImages, function(image, id) {
-                      return _c(
-                        "li",
-                        {
-                          key: id,
-                          on: {
-                            click: function($event) {
-                              return _vm.seeImageForm(image)
-                            }
-                          }
-                        },
-                        [
-                          _c("img", {
-                            staticClass: "img-fluid img-thumbnail rounded",
-                            attrs: { src: image, alt: "" }
-                          })
-                        ]
-                      )
-                    }),
-                    0
-                  )
-                : _vm._e()
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "input-group mb-3" }, [
+  return _c("div", { staticClass: "content-wrapper" }, [
+    _c("div", { staticClass: "content-header" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row mb-2" }, [
           _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "custom-file" }, [
-            _c("input", {
-              staticClass: "custom-file-input",
-              attrs: { type: "file", id: "inputGroupFile01", multiple: "" },
-              on: { change: _vm.previewFiles }
-            }),
-            _vm._v(" "),
-            _c(
-              "label",
-              {
-                staticClass: "custom-file-label",
-                attrs: { for: "inputGroupFile01" }
-              },
-              [_vm._v("Вибрати файл")]
-            )
+          _c("div", { staticClass: "col-sm-6" }, [
+            _c("ol", { staticClass: "breadcrumb float-sm-right" }, [
+              _c(
+                "li",
+                { staticClass: "breadcrumb-item" },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "nav-link active",
+                      attrs: { to: { name: "map" } }
+                    },
+                    [
+                      _vm._v(
+                        "   \r\n                        Головна\r\n                    "
+                      )
+                    ]
+                  )
+                ],
+                1
+              )
+            ])
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "input-group mb-3" }, [
-          _vm._m(1),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.title,
-                expression: "title"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              name: "title",
-              type: "text",
-              id: "basic-url",
-              "aria-describedby": "basic-addon3"
-            },
-            domProps: { value: _vm.title },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.title = $event.target.value
-              }
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "input-group mb-3" }, [
-          _vm._m(2),
-          _vm._v(" "),
-          _c("textarea", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.textarea,
-                expression: "textarea"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              name: "textarea",
-              "aria-label": "With textarea",
-              rows: "5"
-            },
-            domProps: { value: _vm.textarea },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.textarea = $event.target.value
-              }
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-primary insertQueryButton",
-            attrs: { type: "submit" },
-            on: {
-              click: function($event) {
-                return _vm.createQuery()
-              }
-            }
-          },
-          [_vm._v("Змінити")]
-        )
-      ]
-    )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("section", { staticClass: "content" }, [
+      _c("div", { staticClass: "container-fluid" }, [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-12" }, [
+            _c("div", { staticClass: "info" }, [
+              _c(
+                "form",
+                {
+                  attrs: {
+                    method: "POST",
+                    action: "new",
+                    onsubmit: "return false;"
+                  }
+                },
+                [
+                  _c("input", {
+                    attrs: { type: "hidden", id: "tit_loc", name: "_token" },
+                    domProps: { value: _vm.csrf }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group col-12 mb-0" }, [
+                    _c("div", { staticClass: "preview" }, [
+                      _c("div", { staticClass: "form-image" }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-map" },
+                        [
+                          _c(
+                            "GmapMap",
+                            {
+                              attrs: {
+                                center: _vm.center,
+                                zoom: 7,
+                                "map-type-id": "terrain"
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.addPosition($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("GmapMarker", {
+                                attrs: {
+                                  position: _vm.marker,
+                                  clickable: true,
+                                  draggable: false,
+                                  animation: 2
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "form-group col-12 mb-3",
+                      staticStyle: { height: "auto" }
+                    },
+                    [
+                      _c("div", { staticClass: "user-thumbnails" }, [
+                        _vm.previewImages
+                          ? _c(
+                              "ul",
+                              { staticClass: "thumbnails" },
+                              _vm._l(_vm.previewImages, function(image, id) {
+                                return _c(
+                                  "li",
+                                  {
+                                    key: id,
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.seeImageForm(image)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("img", {
+                                      staticClass:
+                                        "img-fluid img-thumbnail rounded",
+                                      attrs: { src: image, alt: "" }
+                                    })
+                                  ]
+                                )
+                              }),
+                              0
+                            )
+                          : _vm._e()
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "custom-file" }, [
+                      _c("input", {
+                        staticClass: "custom-file-input",
+                        attrs: {
+                          type: "file",
+                          id: "inputGroupFile01",
+                          multiple: ""
+                        },
+                        on: { change: _vm.previewFiles }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "custom-file-label",
+                          attrs: { for: "inputGroupFile01" }
+                        },
+                        [_vm._v("Вибрати файл")]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(2),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.title,
+                          expression: "title"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        name: "title",
+                        type: "text",
+                        id: "basic-url",
+                        "aria-describedby": "basic-addon3"
+                      },
+                      domProps: { value: _vm.title },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.title = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _vm._m(3),
+                    _vm._v(" "),
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.textarea,
+                          expression: "textarea"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        name: "textarea",
+                        "aria-label": "With textarea",
+                        rows: "5"
+                      },
+                      domProps: { value: _vm.textarea },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.textarea = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-outline-primary insertQueryButton",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          return _vm.createQuery()
+                        }
+                      }
+                    },
+                    [_vm._v("Змінити")]
+                  )
+                ]
+              )
+            ])
+          ])
+        ])
+      ])
+    ])
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-sm-6" }, [
+      _c("h4", { staticClass: "m-0 text-dark" }, [
+        _vm._v("Створення нової локації")
+      ])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -59091,8 +59565,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue2_google_maps__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue2_google_maps__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _components_AdminMapComponent_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/AdminMapComponent.vue */ "./resources/js/components/AdminMapComponent.vue");
-/* harmony import */ var _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/AdminLocationComponent.vue */ "./resources/js/components/AdminLocationComponent.vue");
-/* harmony import */ var _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/AdminNewComponent.vue */ "./resources/js/components/AdminNewComponent.vue");
+/* harmony import */ var _components_AdminMaptwoComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/AdminMaptwoComponent.vue */ "./resources/js/components/AdminMaptwoComponent.vue");
+/* harmony import */ var _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/AdminLocationComponent.vue */ "./resources/js/components/AdminLocationComponent.vue");
+/* harmony import */ var _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/AdminNewComponent.vue */ "./resources/js/components/AdminNewComponent.vue");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -59127,6 +59602,7 @@ Vue.component('list-component', __webpack_require__(/*! ./components/AdminListLo
 
 
 
+
  // Vue router
 
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
@@ -59138,12 +59614,17 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   }, {
     path: '/admin/location/:id',
     name: 'location',
-    component: _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    component: _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
     props: true
   }, {
     path: '/admin/location/create',
     name: 'newLocation',
-    component: _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    component: _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    props: true
+  }, {
+    path: '/admin/location/map',
+    name: 'map2',
+    component: _components_AdminMaptwoComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
     props: true
   }]
 });
@@ -59157,8 +59638,9 @@ var app = new Vue({
   el: '#warder',
   components: {
     Map: _components_AdminMapComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    InfoLocation: _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    NewLocation: _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+    InfoLocation: _components_AdminLocationComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    NewLocation: _components_AdminNewComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    Map2: _components_AdminMaptwoComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   router: router,
   data: function data() {
@@ -59175,7 +59657,11 @@ var app = new Vue({
       locationMarker: null,
       locationNew: {},
       newMarker: false,
-      newTitle: {}
+      updateTitle: {},
+      updateMarkerLocation: {},
+      newTitle: {},
+      newMarkerLocation: {},
+      nebot: null
     };
   },
   methods: {
@@ -59206,6 +59692,8 @@ var app = new Vue({
       this.newMarker = false;
       this.locationNew = {}; // this.locationNew.push(e);
 
+      this.newTitle = e;
+      this.newMarkerLocation = e;
       this.locationNew = e;
       $('.sidebar').removeClass('active');
     },
@@ -59220,7 +59708,9 @@ var app = new Vue({
       });
       this.locationMarker = this.locationInfo.marker;
     },
-    revLocation: function revLocation(e) {
+    removeLocation: function removeLocation(e) {
+      alert('remove app');
+      console.log(e);
       this.locationId = e;
     },
     insertForm: function insertForm() {
@@ -59237,7 +59727,6 @@ var app = new Vue({
       this.newMarker = false;
     },
     createForm: function createForm() {
-      // alert('create');
       this.newForm = true;
       this.actionForm = false;
     },
@@ -59245,8 +59734,10 @@ var app = new Vue({
     /**
      *  Admin page function
      */
-    insertTitle: function insertTitle(e) {
-      this.newTitle = e;
+    updateLocation: function updateLocation(e) {
+      alert('Update app');
+      this.updateTitle = e;
+      this.updateMarkerLocation = e;
     }
   },
   watch: {
@@ -59457,7 +59948,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AdminMapComponent_vue_vue_type_template_id_4a710d15___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdminMapComponent.vue?vue&type=template&id=4a710d15& */ "./resources/js/components/AdminMapComponent.vue?vue&type=template&id=4a710d15&");
 /* harmony import */ var _AdminMapComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AdminMapComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/AdminMapComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AdminMapComponent.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -59465,7 +59958,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _AdminMapComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _AdminMapComponent_vue_vue_type_template_id_4a710d15___WEBPACK_IMPORTED_MODULE_0__["render"],
   _AdminMapComponent_vue_vue_type_template_id_4a710d15___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -59497,6 +59990,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \****************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--7-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminMapComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMapComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_7_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
 /***/ "./resources/js/components/AdminMapComponent.vue?vue&type=template&id=4a710d15&":
 /*!**************************************************************************************!*\
   !*** ./resources/js/components/AdminMapComponent.vue?vue&type=template&id=4a710d15& ***!
@@ -59510,6 +60019,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_template_id_4a710d15___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMapComponent_vue_vue_type_template_id_4a710d15___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminMaptwoComponent.vue":
+/*!**********************************************************!*\
+  !*** ./resources/js/components/AdminMaptwoComponent.vue ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09& */ "./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09&");
+/* harmony import */ var _AdminMaptwoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AdminMaptwoComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AdminMaptwoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/AdminMaptwoComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMaptwoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminMaptwoComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMaptwoComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMaptwoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09&":
+/*!*****************************************************************************************!*\
+  !*** ./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09& ***!
+  \*****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AdminMaptwoComponent.vue?vue&type=template&id=0b46ca09&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminMaptwoComponent_vue_vue_type_template_id_0b46ca09___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
