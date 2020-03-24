@@ -38,10 +38,8 @@
                     <textarea v-model='textarea' id='textarea' class="form-control" name='text' rows="3"></textarea>
                 </div>
                 <input type="hidden" name='marker' :value='JSON.stringify(this.marker)'>
-                <button type="submit" v-if='createquery' @click='createQuery()' class="btn btn-primary">Створити</button>
-                <button type="submit" v-if='insertquery' @click='insertQuery()' class="btn btn-primary">Створити</button>
-                <!-- @click='createQuery()' -->
-                <!-- @click='insertQuery()' -->
+                <button type="submit" v-if='createquery' @click='createQuery()' class="btn btn-primary mb-2">Створити</button>
+                <button type="submit" v-if='insertquery' @click='insertQuery()' class="btn btn-primary mb-2">Змінити</button>
             </form>
         </div>
         <div class="informationLocation" v-else>
@@ -81,11 +79,12 @@
                         <div class="form-group">
                             <textarea v-model='review' name='review' class="form-control" id="comment-text" rows="3"></textarea>
                         </div>
-                        <button @click='createComment' type="submit" class="btn btn-outline-secondary btn-sm float-right">Коментувати</button>
+                        <button @click='createComment()' type="submit" class="btn btn-outline-secondary btn-sm float-right mb-2">Коментувати</button>
                     </form>
                 </div>
                 <p class='empty-comment' v-if='comments == null'>Коментарів немає(((</p>
                 <div class="comment-body">
+                    <div class="prevComment"></div>
                     <div class="row user-comment" v-for='user in comments' :key='user.id'>
                         <div class="col-12">
                             <div class="card card-white post">
@@ -117,6 +116,7 @@
 
 <script>
    export default {
+        name:'Sidebar',
         props:[
             'data',
             'marker',
@@ -152,16 +152,23 @@
             });
         },
         methods: {
+            /**
+             *  See image basic
+             */
             seeImage: function(e) {
                 $('.sidebar-image').css('background-image','url("storage/'+e['image_url']+'")');
                 
             },
+            /**
+             * See image form
+             */
             seeImageForm: function(e) {
                 $('.sidebar-image').css('background-image','url("'+e?e:''+'")');
             },
+            /**
+             * Method create query
+             */
            async createQuery() {
-               
-
                 let vue = this;
                 if(this.inputFiles != null) {
                     for( let item of this.inputFiles) {
@@ -184,6 +191,9 @@
                 this.createquery = false;
                 $('.sidebar').removeClass('active');
             },
+            /**
+             * Method preview image input
+             */
             async previewFiles(e) {
                 this.inputFiles = Array.from(event.target.files);
 
@@ -203,6 +213,9 @@
                     reader.readAsDataURL(f);
                 } 
             },
+            /**
+             * Method add new image to base
+             */
             async uploadsFile(item){
                 let vue = this;
                 let form = new FormData();
@@ -213,9 +226,11 @@
                 })
                 .catch(error => {console.log(error)});
             },
+            /**
+             * Method delete value of inputs form
+             */
             insertData: function(e) {
                 this.$emit('insertform');
-                alert('Insert');
                 this.createquery = false;
                 this.insertquery = true;
                 this.title = this.data.title;
@@ -226,6 +241,9 @@
                 this.seeImageForm(this.previewImages[0]);
                 this.actionForm = true;
             },
+            /**
+             * Method update query base
+             */
             async insertQuery(e) {
   
                 let vue = this;
@@ -242,18 +260,22 @@
                     old_image_url:this.removeImages
                 })
                 .then(function(data) {
-                    alert('success');
                     $('.sidebar').removeClass('active');
                     $('.sidebar-image').css('background-image','url("")');
                     vue.closeForm();
-                    // vue.$emit('location',data.data);
                 });
                 
                 $('.sidebar').removeClass('active');
             },
+            /**
+             * Method remove location
+             */
             removeData: function(e) {
                 this.$emit('removeloc',e);
             },
+            /**
+             * Method close form
+             */
             closeForm:function() {
                 $('.sidebar').removeClass('active');
                 document.querySelectorAll('input, textarea').forEach(el=>el.value = '');
@@ -266,15 +288,20 @@
                 this.textarea = null;
                 this.previewImages = [];
             },
+            /**
+             * Method create comment
+             */
             createComment: function(e) {
+                let vue = this;
                 axios
                 .post('/user',{
                     location_id:this.data.id,
                     review:this.review
                 })
                 .then(function(data) {
-                    $('.user-comment').before(
-                        $('<div/>').attr('class','row user-comment').append(
+                    vue.review = null;
+                    $('.prevComment').after(
+                        $('<div/>').attr('class','row user-comment previewComment').append(
                             $('<div/>').attr('class','col-12').append(
                                 $('<div/>').attr('class','card card-white post').append(
                                     $('<div/>').addClass('post-heading').append(
@@ -295,9 +322,11 @@
                                                 $('<p/>').attr('class','text-muted float-left small ml-2')
                                                 .text(data.data.updated_at.substr(11,5))
                                             )
+                                            .css('padding-left','10px')
                                         )
                                     ),
-                                    $('<div/>').attr('class','post-description text-justify').append(
+                                    $('<div/>').attr('class','post-description text-justify')
+                                    .append(
                                         $('<p/>').text(data.data.review)
                                     )
                                 )
@@ -306,6 +335,9 @@
                     );
                 });
             },
+            /**
+             * Method remove previews images of form
+             */
             removePreviewImage:function(e) {
                 for (let index = 0; index < this.previewImages.length; index++) { 
                     console.log(this.previewImages[index] + ' == '+  e);
@@ -317,10 +349,11 @@
             }
         },
         watch: {
+            /**
+             * Watch data location
+             */
             data:function() {
                 $('.sidebar').addClass('active');
-                // console.log(this.data.user_id +' == '+ this.userId);
-                
                 if(this.data.user_id == this.userId) {
                     this.contentUser = true;
                 }else {
@@ -332,6 +365,9 @@
                     $('.sidebar-image').css('background-image','url("")');
                 }
             },
+            /**
+             * Watch preview images update
+             */
             previewImages:function() {
                 if(this.previewImages.length != 0) {
                     $('.sidebar-image').css('background-image','url("'+this.previewImages[0]+'")');
@@ -339,12 +375,18 @@
                     $('.sidebar-image').css('background-image','url("")');
                 }
             },
+            /**
+             * Watch active form
+             */
             activForm:function() {
                 this.markerPosition = this.marker;
                 this.actionForm = this.activForm;
             },
+            /**
+             * Watch open form for create
+             */
             creatForm:function() {
-                 this.createquery = true;
+                this.createquery = true;
                 this.insertquery = false;
             }
         }

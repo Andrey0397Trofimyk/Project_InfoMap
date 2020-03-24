@@ -15,13 +15,17 @@ class Comment extends Model
         'user_id','location_id','surname','review'
       ];
 
-    /**
-     * Connection
+     /**
+     * Connection with model User.
+     *
      */
-
     public function user() {
         return $this->belongsTo('App\User');
     }
+     /**
+     * Connection with model Location.
+     *
+     */
     public function location() {
         return $this->belongsTo('App\Location');
     }

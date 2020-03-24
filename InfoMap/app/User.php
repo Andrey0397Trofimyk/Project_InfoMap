@@ -36,10 +36,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+    /**
+     * Connection with model Location.
+     *
+     */
     public function locations() {
         return $this->hasMany('App\Location');
     }
+    /**
+     * Connection with model Comment.
+     *
+     */
     public function comments() {
         return $this->hasMany('App\Comment');
     } 

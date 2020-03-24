@@ -19,6 +19,21 @@ class AdminController extends Controller
      */
     public function index()
     {
+        // $locations = new Location;
+        // $comments = new Comment;
+        // $images = new Image;
+
+        // return view('layouts.adminLayouts.adminPage',compact('locations','comments','images'));
+        // return view('layouts.adminLayouts.adminPage',compact('locations','comments','images'));
+        return redirect()->route('admin.map');
+    }
+    /**
+     * Display a listing of the map route.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexMap()
+    {
         $locations = new Location;
         $comments = new Comment;
         $images = new Image;
@@ -45,29 +60,41 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        $location = new Location;
+        if(!$request->review) {
+            $location = new Location;
 
-        $location->fill([
-            'user_id'=>Auth::id(),
-            'title'=>$request->title,
-            'text'=>$request->text,
-            'marker'=>$request->marker
-        ]);
-        $location->save();
+            $location->fill([
+                'user_id'=>Auth::id(),
+                'title'=>$request->title,
+                'text'=>$request->text,
+                'marker'=>$request->marker
+            ]);
+            $location->save();
 
-        
+            
 
-        foreach ($request->image_url as $key => $value) {
-            $image = new Image;
-            $image->fill(
-                [
-                    'location_id'=>$location->id,
-                    'image_url'=>$value
-                ]
-            );
-            $image->save();
+            foreach ($request->image_url as $key => $value) {
+                $image = new Image;
+                $image->fill(
+                    [
+                        'location_id'=>$location->id,
+                        'image_url'=>$value
+                    ]
+                );
+                $image->save();
+            }
+            return $location;
+        }else {
+            $comment = new Comment;
+            $comment->fill([
+                'user_id'=>Auth::id(),
+                'location_id'=>$request->location_id,
+                'surname'=>Auth::user()->name,
+                'review'=>$request->review
+            ]);;
+            $comment->save();
+            return $comment;
         }
-        return $location;
     }
 
     /**
@@ -125,7 +152,6 @@ class AdminController extends Controller
         $location->marker = $request->marker;
         $location->save();
         return $location;
-        // return 1;
     }
 
     /**
@@ -139,10 +165,20 @@ class AdminController extends Controller
         Location::destroy($id);
     }
     /**
-     * Storage new images
+     * Remove comment from storage.
      *
      * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteComment($id) {
+        Comment::destroy($id);
+        return $id;
+    }
+    /**
+     * Storage new images
+     *
      * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function uploads(Request $request) {
         $path = $request->file('image')->store('location_images','public');

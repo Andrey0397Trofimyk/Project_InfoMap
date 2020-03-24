@@ -76,20 +76,22 @@
             <ul class="nav nav-pills nav-sidebar flex-column" id='treeview' data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                     with font-awesome or any other icon font library -->
+                <!-- <li class="nav-item">
+                    <a href="../widgets.html" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                    Widgets
+                    <span class="right badge badge-danger">New</span>
+                    </p>
+                    </a>
+                </!--> -->
                 <li class='nav-item'>
                     <router-link 
                     class='nav-link active' 
                     :to="{ name: 'map' }">
                         <i class="nav-icon fas fa-atlas"></i>   
-                        Головна
+                        <p>Головна</p>
                     </router-link >
-                    
-                </li>
-                <li class='nav-item'>
-                    <router-link class='nav-link' :to="{ name: 'map2' }">
-                        <i class="nav-icon fas fa-plus-circle"></i>
-                        <p>Створити</p>
-                    </router-link>
                 </li>
                 <list-component
                 :locations ='{{$locations->select("id","title")->get()}}'

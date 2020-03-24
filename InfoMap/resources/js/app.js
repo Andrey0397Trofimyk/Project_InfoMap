@@ -112,7 +112,6 @@ const app = new Vue({
             axios
             .get('/comments/'+e)
             .then(data => (this.comments = data['data']));
-            
         },
         openForm:function(e) {
             this.mapPosition = e;
@@ -144,8 +143,6 @@ const app = new Vue({
             this.locationMarker = this.locationInfo.marker;
         },
         removeLocation: function(e) {
-            alert('remove app');
-            console.log(e);
             this.locationId = e;
         },
         insertForm: function(){

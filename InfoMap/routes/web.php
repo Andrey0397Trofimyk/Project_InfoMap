@@ -32,8 +32,8 @@ Route::group($goup,function(){
     Route::resource('admin/location','AdminController')
     ->only($methods_admin)
     ->names('admin');
-    Route::get('admin/map','AdminController@index')->name('admin.map');
-    Route::get('/admin/location/map','AdminController@index')->name('admin.map2');
+    Route::get('admin/map','AdminController@indexMap')->name('admin.map');
+    Route::delete('admin/location/comment/{id}','AdminController@deleteComment');
     Route::post('admin/upload','AdminController@uploads');
     Route::post('admin/location/new','AdminController@store');
     /**
